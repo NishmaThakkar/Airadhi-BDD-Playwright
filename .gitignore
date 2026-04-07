@@ -4,3 +4,9 @@ allure-report/
 test-results/
 .env
 playwright-report/
+
+# Playwright
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
