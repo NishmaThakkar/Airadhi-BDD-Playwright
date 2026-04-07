@@ -1,7 +1,20 @@
 module.exports = {
   default: {
-    require: ["tests/bdd/step-definitions/**/*.ts"],
+    require: [
+      "tests/bdd/**/*.ts",
+      "tests/bdd/hooks/**/*.ts"   
+    ],
+      strict: true, 
+    paths: ["tests/bdd/features/**/*.feature"],
     requireModule: ["ts-node/register"],
-    format: ["allure-cucumberjs/reporter"]
+    format: [
+      "progress",              
+      "allure-cucumberjs/reporter"
+    ],
+     formatOptions: {
+      resultsDir: 'allure-results'
+    },
+
   }
 };
+

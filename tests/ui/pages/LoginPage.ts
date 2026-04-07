@@ -5,11 +5,12 @@ export class LoginPage {
 
   async navigate() {
     await this.page.goto('https://airadhi-merck-uat.airamatrix.in/AIRADHI/login');
+   
   }
 
-  async login(email: string, password: string) {
-    await this.page.getByRole('textbox', { name: 'Email ID' }).fill(email);
-    await this.page.getByRole('textbox', { name: 'Password' }).fill(password);
+  async login() {
+    await this.page.getByRole('textbox', { name: 'Email ID' }).fill("nishma.thakkar@airamatrix.com");
+    await this.page.getByRole('textbox', { name: 'Password' }).fill("Password@5");
     await this.page.getByRole('button', { name: 'Login' }).click();
   }
 
@@ -24,6 +25,10 @@ export class LoginPage {
   }
 
   async verifyLogout() {
-    await expect(this.page).toHaveURL(/login/);
+    await expect(this.page).toHaveURL(/login/);  }
+
   }
-}
+
+
+
+

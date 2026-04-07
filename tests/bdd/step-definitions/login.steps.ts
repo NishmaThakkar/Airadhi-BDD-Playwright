@@ -7,8 +7,7 @@ Given('I open the login page', async function () {
   await this.loginPage.navigate();
 });
 
-When(
-  'I login with email {string} and password {string}',
+When('I login with email {string} and password {string}',
   async function (email: string, password: string) {
     await this.loginPage.login(email, password);
   }
