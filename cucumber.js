@@ -1,11 +1,11 @@
 module.exports = {
   default: {
     require: [
-      "tests/bdd/**/*.ts",
-      "tests/bdd/hooks/**/*.ts"   
+      "tests/**/*.ts",
+      "tests/hooks/**/*.ts"   
     ],
       strict: true, 
-    paths: ["tests/bdd/features/**/*.feature"],
+    paths: ["tests/features/**/*.feature"],
     requireModule: ["ts-node/register"],
     format: [
       "progress",              

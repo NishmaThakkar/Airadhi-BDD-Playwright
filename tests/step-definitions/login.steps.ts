@@ -1,5 +1,5 @@
 import { Given, When, Then } from '@cucumber/cucumber';
-import { LoginPage } from '../../ui/pages/LoginPage';
+import { LoginPage } from '../../pages/LoginPage';
 
 
 Given('I open the login page', async function () {
