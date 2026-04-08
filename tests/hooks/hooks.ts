@@ -1,6 +1,6 @@
 import { Before, After } from '@cucumber/cucumber';
 import { chromium } from '@playwright/test';
-import { CustomWorld } from '../../../fixtures/world';
+import { CustomWorld } from '../../tests/fixtures/world';
 import { setDefaultTimeout } from '@cucumber/cucumber';
 
 

@@ -1,6 +1,6 @@
 import { Given, When, Then, setDefaultTimeout } from '@cucumber/cucumber';
-import { CustomWorld } from '../../../fixtures/world';
-import { LoginPage } from '../../ui/pages/LoginPage';
+import { CustomWorld } from '../../tests/fixtures/world';
+import { LoginPage } from '../../pages/LoginPage';
 
 Given('User launches the application', async function (this: CustomWorld) {
   this.loginPage = new LoginPage(this.page);
