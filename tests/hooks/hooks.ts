@@ -26,6 +26,5 @@ After(async function (this: CustomWorld, scenario) {
     await this.attach('Scenario passed', 'text/plain');
   }
 
-     await this.browser.close();
-    
+     await this.browser.close(); 
 });

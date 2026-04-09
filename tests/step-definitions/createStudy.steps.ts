@@ -18,6 +18,7 @@ Given('User navigates to technician role', async function () {
   timeout: 10000
 });
   await this.page.getByText('Technician').click();
+  await this.page.locator('div').filter({ hasText: /^Status$/ }).nth(3).click();
 });
 
 Given('User clicks on "Create Study" button', async function () {
@@ -25,14 +26,16 @@ Given('User clicks on "Create Study" button', async function () {
 });
 
   Given('User selects a template {string} and upload a valid study data file {string}', async function (templateName: string, excelFilePath: string) {
-  const filePath = `./data/${excelFilePath}`;
+  const filePath = `./test-data/${excelFilePath}`;
+  const templateSelector = templateName;
   await this.page.getByRole('combobox').click();
   await this.page.getByRole('combobox').click();
-  await this.page.getByText('15Fields').click();
+  setDefaultTimeout(10000); 
+  await this.page.getByText(templateSelector).click();
   await this.page.setInputFiles('input[type="file"]', filePath);
   await this.page.getByRole('button', { name: 'Create' }).click();
-  setDefaultTimeout(10000); 
- 
+
+  
 });
 
 When('user enters study details', async function (this: CustomWorld) {
