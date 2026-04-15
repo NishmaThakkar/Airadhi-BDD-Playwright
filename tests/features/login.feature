@@ -1,4 +1,3 @@
-@study
 Feature: Login and Logout
 
 Scenario: Successful login and logout

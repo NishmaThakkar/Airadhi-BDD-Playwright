@@ -5,7 +5,6 @@ export class LoginPage {
 
   async navigate() {
     await this.page.goto('https://airadhi-merck-uat.airamatrix.in/AIRADHI/login');
-   
   }
 
   async login() {
