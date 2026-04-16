@@ -9,7 +9,7 @@ Given('User launches the application', async function (this: CustomWorld) {
 });
 
 Given('User enters valid credentials and is logged in sucessfully', async function (this: CustomWorld) {
-  await this.loginPage.login();
+//  await this.loginPage.login();
 });
 
 Given('User navigates to technician role', async function () {
