@@ -24,3 +24,14 @@ When('I logout from the application', async function () {
 Then('I should be logged out', async function () {
   await this.loginPage.verifyLogout();
 });
+
+When('I login with incorrect email {string} and password {string}',
+  async function (email: string, password: string) {
+    await this.loginPage.invalidlogin(email, password);
+  }
+);
+
+Then('I should see a login error message', async function(){
+    await this.loginPage.Error_msg();
+});
+

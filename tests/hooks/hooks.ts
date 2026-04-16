@@ -2,7 +2,7 @@ import { Before, After } from '@cucumber/cucumber';
 import { chromium } from '@playwright/test';
 import { CustomWorld } from '../../tests/fixtures/world';
 import { setDefaultTimeout } from '@cucumber/cucumber';
-
+import { LoginPage } from "../../pages/LoginPage";
 
 setDefaultTimeout(60 * 1000); // 60 seconds
 
@@ -13,8 +13,6 @@ Before(async function (this: CustomWorld) {
     viewport: null});
   this.page = await this.context.newPage();
 });
-
-
 
 After(async function (this: CustomWorld, scenario) {
    const status = scenario.result?.status; 
