@@ -7,8 +7,7 @@ export class CustomWorld extends World {
   context!: BrowserContext;
   page!: Page;
   loginPage!: LoginPage;
-  expect = expect;
-  
+  technicianPage: any;
 }
 
 setWorldConstructor(CustomWorld);

@@ -7,10 +7,27 @@ export class LoginPage {
     await this.page.goto('https://airadhi-merck-uat.airamatrix.in/AIRADHI/login');
   }
 
-  async login() {
-    await this.page.getByRole('textbox', { name: 'Email ID' }).fill("nishma.thakkar@airamatrix.com");
-    await this.page.getByRole('textbox', { name: 'Password' }).fill("Password@5");
+  async login(email: string, password: string) {
+ await this.page.getByRole('textbox', { name: 'Email ID' }).fill(email);
+    await this.page.getByRole('textbox', { name: 'Password' }).fill(password);
+    await this.page.waitForTimeout(10000);
     await this.page.getByRole('button', { name: 'Login' }).click();
+  }
+
+  async invalidlogin(email: string, password: string) {
+    await this.page.getByRole('textbox', { name: 'Email ID' }).fill(email);
+    await this.page.getByRole('textbox', { name: 'Password' }).fill(password);
+    await this.page.waitForTimeout(10000);
+    await this.page.getByRole('button', { name: 'Login' }).click();
+  }
+
+  async Error_msg(){
+    try {
+    await expect(this.page).toHaveURL(/login/, { timeout: 5000 });
+    console.log('Login failed as expected, test passed.');
+  } catch (error) {
+    throw new Error('Login succeeded unexpectedly, test failed.');
+  }
   }
 
   async verifyLogin() {
