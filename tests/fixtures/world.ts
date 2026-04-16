@@ -8,7 +8,9 @@ export class CustomWorld extends World {
   page!: Page;
   loginPage!: LoginPage;
   expect = expect;
-  
+ // LoginPage!: LoginPage;
+
+
 }
 
 setWorldConstructor(CustomWorld);
