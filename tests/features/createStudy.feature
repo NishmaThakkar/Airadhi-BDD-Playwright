@@ -13,6 +13,8 @@ Scenario Outline: Create a study with multiple slides having different tissues f
   And User clicks on "Next" button
   And User clicks on "Save & Finish" button
   Then User should see study under Study list with correct details
+  
+
 Examples:
 |Template_Name | Excel_File_Path  |
 | 15Fields  | 1AnimalID6organs.csv |
