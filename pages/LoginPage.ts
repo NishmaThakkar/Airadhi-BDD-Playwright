@@ -11,6 +11,7 @@ export class LoginPage {
     await this.page.getByRole('textbox', { name: 'Email ID' }).fill("nishma.thakkar@airamatrix.com");
     await this.page.getByRole('textbox', { name: 'Password' }).fill("Password@5");
     await this.page.getByRole('button', { name: 'Login' }).click();
+    await this.verifyLogin();
   }
 
   async verifyLogin() {
