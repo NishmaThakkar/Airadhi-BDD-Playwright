@@ -9,7 +9,7 @@ Given('User launches the application', async function (this: CustomWorld) {
 });
 
 Given('User enters valid credentials and is logged in sucessfully', async function (this: CustomWorld) {
-  await this.loginPage.login();
+  await this.loginPage.login("nishma.thakkar@airamatrix.com", "Password@1");
 });
 
 Given('User navigates to technician role', async function (this: CustomWorld) {
@@ -45,9 +45,11 @@ await this.page.getByRole('textbox', { name: 'Project No.' }).fill('Proj-09');
 await this.page.getByRole('textbox', { name: 'Project No.' }).press('Tab');
 await this.page.getByRole('textbox', { name: 'Project No.' }).click();
 await this.page.locator('div').filter({ hasText: /^Study Administrator\*$/ }).nth(3).click();
-await this.page.locator('#mat-option-48').getByText('Nishma Thakkar').click();
+await this.page.getByText('Nishma Thakkar', { exact: true }).click();
+await this.expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden();
 await this.page.locator('div').filter({ hasText: /^Pathologist\*$/ }).nth(3).click();
-await this.page.locator('#mat-option-32').getByText('Nishma Thakkar').click();
+await this.page.getByRole('option', { name: 'Nishma Thakkar' }).click();
+await this.expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden();
 await this.page.locator('div').filter({ hasText: /^Species \*$/ }).nth(3).click();
 await this.page.getByText('Mice').click();
 });
@@ -59,9 +61,9 @@ Given('User clicks on "Next" button', async function (this: CustomWorld) {
 
 Given('User clicks on "Save & Finish" button', async function (this: CustomWorld) {
   await this.page.getByRole('button', { name: 'Save & Finish' }).click();
+   await this.page.waitForURL('**/dashboard/study', {
+  timeout: 10000
 });
-
-Then('Study should be created successfully', async function (this: CustomWorld) {
-await this.expect(this.page.getByText('Study created successfully')).toBeVisible();
+    await this.expect(this.page.getByText('1AID7organs')).toBeVisible();
 });
 
