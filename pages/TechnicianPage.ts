@@ -1,14 +1,15 @@
 import { Page, expect } from '@playwright/test';
-import { LoginPage } from './LoginPage';
+
 
 export class TechnicianPage{
     constructor(private page: Page) {}
     private repo_name: string = '';
+  //  private study_number: string = '';
 
     async loginTechnician(){
         await this.page.goto('https://airadhi-merck-uat.airamatrix.in/AIRADHI/login');
         await this.page.getByRole('textbox', { name: 'Email ID' }).fill("nishma.thakkar@airamatrix.com");
-        await this.page.getByRole('textbox', { name: 'Password' }).fill("Password@5");
+        await this.page.getByRole('textbox', { name: 'Password' }).fill("Password@1");
         await this.page.waitForTimeout(10000);
         await this.page.getByRole('button', { name: 'Login' }).click();
     }
@@ -22,7 +23,6 @@ export class TechnicianPage{
         } catch (error) {
             throw new Error('Failed to select Technician role: ' + error);
         }
-        
     }
 
     // Method to verify left panel sections
@@ -35,7 +35,6 @@ export class TechnicianPage{
             throw new Error('Failed to verify left panel section: ' + error);
          }
      }
-
 
     // Method to verify status dropdown options
     async verifyStatusDropdownOption() {
@@ -404,7 +403,6 @@ export class TechnicianPage{
     }
 }
 
-///////////////////
     // Method to verify study status is displayed on table with that study status on Technician dashboard
     async verifyStudyStatusDisplayed(study_status: string, study_number: string) {
         try {
@@ -424,6 +422,204 @@ export class TechnicianPage{
 
     }
 
+    // Method to note study number and slides mapped for first study in the list
+    private study_number: string = '';
+    private slides_mapped_col: string = '';
+    async userHasNotedStudyNoAndSlidesMapped() {
+        try {
+            const firstStudyRow = this.page.locator('tbody tr').first();   
+            this.study_number = await firstStudyRow.locator('#openGalleryIcon').first().innerText();
+            console.log('Study number noted:', this.study_number);
+            this.slides_mapped_col = await firstStudyRow.locator('td.mat-column-slidesMapped span').innerText();
+            console.log('Slides mapped for the study:', this.slides_mapped_col);
+        }
+        catch (error) {
+            throw new Error('Failed to note study number and slides mapped for first study: ' + error);
+        }
+    }
+
+    // Method to click on three dots on right side of any study
+    async clickThreeDotsOnStudy() {
+        try {
+            const threeDotsButton = this.page.locator('tr.expandable-element-row').first().locator('.mat-menu-trigger');
+            await threeDotsButton.click();
+            await this.page.waitForTimeout(2000);
+        }
+        catch (error) {
+            throw new Error('Failed to click on three dots on right side of any study: ' + error);
+        }
+    }
+
+    // Method to click on view report option
+    async clickViewReportOption() {
+        try {
+            const viewReportOption = this.page.locator('button.mat-menu-item', { hasText: 'View Report' });
+            await viewReportOption.click();
+            await this.page.waitForTimeout(2000);
+        }
+        catch (error) {
+            throw new Error('Failed to click on view report option: ' + error);
+        }
+    }
+
+    // Method to verify view report popup is displayed
+    async verifyViewReportPopupDisplayed(popup_header: string) {
+        try {
+            const reportHeader = this.page.locator('div.dialog-title', { hasText: popup_header });
+            await expect(reportHeader).toBeVisible({ timeout: 5000 });
+        } catch (error) {
+            throw new Error('Failed to verify view report popup is displayed: ' + error);
+        }
+    }
+
+    //study_number and slides_mapped_col
+    // Method to verify correct study number is displayed in view report popup
+    async verifyCorrectStudyNumberDisplayed() {
+        try {
+            const studyNumber = await this.page.locator('label:has-text("Study No.") + .reportStudy').innerText();
+            console.log(studyNumber); // Same_img_recut_2
+            expect(studyNumber?.trim()).toBe(this.study_number.trim());
+        }
+        catch (error) {
+            throw new Error('Failed to verify correct study number is displayed in view report popup: ' + error);
+        }
+    }
+
+    // Method to verify image status dropdown is displayed with correct status options in view report popup
+    async verifyImageStatusOptions(expectedOptions: string[]) {
+    try {
+        const dropdown = this.page.locator('.reportMappingDiv mat-select[role="combobox"]');
+        await dropdown.click();
+        await this.page.waitForSelector('mat-option');
+
+        const actualOptions = await this.page.locator('mat-option').allTextContents();
+
+        for (const option of expectedOptions) {
+            expect(actualOptions).toContain(option);
+        }
+
+        // close dropdown after verification
+        await this.page.locator('//mat-option[normalize-space()="All Images"]').click();
+        await this.page.waitForTimeout(2000);
+
+    } 
+    catch (error) {
+        throw new Error('Failed to verify image status dropdown options in view report popup: ' + error);
+    }
 }
 
+    // Method to verify image table with columns on View Report popup
+    async verifyImageTableColumns(option: string) {
+        try {
+            const header = this.page.locator('#dataSlidesTableHeader th', { hasText: option });
+            await expect(header).toBeVisible({ timeout: 3000 });
+        } catch (error) {
+            throw new Error('Failed to verify image table columns in view report popup: ' + error);
+        }
+    }
+
+    //Method to verify count of mapped images displayed in view report popup matches with slides mapped noted for the study
+    private total_slides_mapped: number = 0;
+    private mappedCount: number = 0;
+    async verifyCountOfMappedImages() {
+        try {
+            this.mappedCount = await this.page.locator('tbody.slideData tr td:last-child p',{ hasText: 'Mapped' }).count();
+            console.log('Count of mapped images displayed in view report popup:', this.mappedCount);
+            console.log('Slides mapped noted for the study:', this.slides_mapped_col);
+            this.total_slides_mapped = parseInt(this.slides_mapped_col.split('/')[1].trim());
+            console.log('Total slides mapped extracted from noted value:', this.total_slides_mapped);
+            expect(this.mappedCount).toBe(this.total_slides_mapped);
+        }
+        catch (error) {
+            throw new Error('Failed to verify count of mapped images in view report popup: ' + error);
+        }
+    }
+
+    //Method to verify count of unmapped images displayed in view report popup matches with slides unmapped noted for the study
+    private slides_mapped_count: number = 0;
+    private unmapped_slides: number = 0;
+    async verifyCountOfUnmappedImages() {
+        try {
+            console.log("-----------------------------");
+            const unmappedCount = await this.page.locator('tbody.slideData tr td:last-child p',{ hasText: 'Unmapped' }).count();
+            console.log('Count of unmapped images displayed in view report popup:', unmappedCount);
+            console.log('Slides mapped noted for the study:', this.slides_mapped_col);
+            console.log('Total slides on UI:', this.total_slides_mapped);
+            this.slides_mapped_count = parseInt(this.slides_mapped_col.split('/')[0].trim());
+            console.log('Total slides unmapped extracted from noted value:', this.slides_mapped_count);
+            this.unmapped_slides = this.total_slides_mapped - (this.slides_mapped_count);
+            expect(this.unmapped_slides).toBe(unmappedCount);
+        }
+        catch (error) {
+            throw new Error('Failed to verify count of unmapped images in view report popup: ' + error);
+        }       
+    }
+
+    // Method to verify total slide count displayed in view report popup matches with total slides noted for the study
+    async verifyTotalSlidesOnViewReport() {
+        try{
+            console.log("-----------------------------");
+            const rowCount = await this.page.locator('tbody.slideData tr').count();
+            console.log('Total rows:', rowCount);
+            console.log('total_slides_mapped in study:', this.total_slides_mapped);
+            expect(rowCount).toBe(this.total_slides_mapped);
+        }
+        catch (error) {
+            throw new Error('Failed to verify total slide count in view report popup: ' + error);
+        }
+    }
+
+    // Method to verify Cancel and Download Report buttons are displayed in view report popup
+    async verifyCancelAndDownloadButtons() {
+        try {
+            const cancelButton = this.page.locator('button', { hasText: 'Cancel' });
+            const downloadButton = this.page.locator('button', { hasText: 'Download' });
+            await expect(cancelButton).toBeVisible({ timeout: 5000 });
+            await expect(downloadButton).toBeVisible({ timeout: 5000 });
+        } catch (error) {
+            throw new Error('Failed to verify Cancel and Download Report buttons in view report popup: ' + error);
+        }
+    }
+
+    // Method to verify image filter functionality in dropdown on view report popup
+    async verifyImageFilterFunctionality() {
+        try {
+            console.log('-------------Mapped Count----------------------');
+            const dropdown = this.page.locator('.reportMappingDiv mat-select[role="combobox"]');
+            await dropdown.click();
+            await this.page.waitForSelector('mat-option');
+            await this.page.locator('//mat-option[normalize-space()="Mapped Images"]').click();
+            await this.page.waitForTimeout(1000);
+
+            const selectedOption = await this.page.locator('.reportMappingDiv mat-select[role="combobox"]').locator('.mat-select-min-line').innerText();
+            const expectedOptionForMapped = 'Mapped Images';
+            expect(selectedOption?.trim()).toBe(expectedOptionForMapped);
+            
+            const FilteredmappedCount = await this.page.locator('tbody.slideData tr td:last-child p',{ hasText: 'Mapped' }).count();
+            console.log('Filtered mapped count: ',FilteredmappedCount);
+            expect(FilteredmappedCount).toBe(this.slides_mapped_count);
+            console.log('slides mapped count from UI:',this.slides_mapped_count);
+            console.log('Image filter functionality for mapped images in dropdown on view report popup is working as expected');
+
+            console.log('-------------Unmapped Count----------------------');
+
+            await dropdown.click();
+            await this.page.waitForSelector('mat-option');
+            await this.page.locator('//mat-option[normalize-space()="Unmapped Images"]').click();
+            await this.page.waitForTimeout(1000);
+
+            const selectedOptionForMapped = await this.page.locator('.reportMappingDiv mat-select[role="combobox"]').locator('.mat-select-min-line').innerText();
+            const expectedOptionForUnmapped = 'Unmapped Images';
+            expect(selectedOptionForMapped?.trim()).toBe(expectedOptionForUnmapped);
+
+            const FilteredUnmappedCount = await this.page.locator('tbody.slideData tr td:last-child p',{ hasText: 'Unmapped' }).count();
+            console.log('Filtered unmapped count: ',FilteredUnmappedCount);
+            expect(FilteredUnmappedCount).toBe(this.unmapped_slides);
+        }
+        catch (error) {
+            throw new Error('Failed to verify image filter functionality in dropdown on view report popup: ' + error);
+        }
+    }
+  
+}
 

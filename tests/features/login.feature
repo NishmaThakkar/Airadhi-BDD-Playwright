@@ -1,5 +1,5 @@
 Feature: Login and Logout
-@test_one1
+@runall
 Scenario Outline: Successful login and logout
   Given I open the login page
   When I login with email "<email>" and password "<password>"
@@ -10,7 +10,7 @@ Scenario Outline: Successful login and logout
   | email                              | password   |
   | nishma.thakkar@airamatrix.com      | Password@5 |
 
-@test_one1
+@runall
 Scenario Outline: Invalid login attempts
   Given I open the login page
   When I login with incorrect email "<email>" and password "<password>"

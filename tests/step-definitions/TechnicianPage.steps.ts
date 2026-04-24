@@ -111,5 +111,56 @@ Then('user should see study status displayed on table as {string} for that {stri
      await this.technicianPage.verifyStudyStatusDisplayed(study_status,study_number);
 });
 
+When('user has noted study no. and slides mapped for first study', async function () {
+     await this.technicianPage.userHasNotedStudyNoAndSlidesMapped();
+});
+
+When('user click on three dots on right side of any study', async function () {
+     await this.technicianPage.clickThreeDotsOnStudy();
+});
+
+Then('user should click on view report option', async function () {
+     await this.technicianPage.clickViewReportOption();
+});
+
+Then('user should see view report popup header as {string}', async function (popup_header) {
+     await this.technicianPage.verifyViewReportPopupDisplayed(popup_header);
+});
+
+Then('user validate Study No. label is displayed with correct study number', async function () {
+     await this.technicianPage.verifyCorrectStudyNumberDisplayed();
+});
+
+Then('user validate image status dropdown is displayed with correct image status options:', async function (dataTable) {
+    const image_status_options = dataTable.raw().flat().map((opt: string) => opt.trim());
+    await this.technicianPage.verifyImageStatusOptions(image_status_options);
+});
+
+Then('user validate image table with columns:', async function (dataTable) {
+     const imag_report_cols = dataTable.raw().flat(); // ["Subject ID", "Image Name","Cassette ID","Status"]
+     for (const col of imag_report_cols) {
+     await this.technicianPage.verifyImageTableColumns(col);
+  }
+});
+
+Then('user validate total slide count is correct', async function(){
+     await this.technicianPage.verifyTotalSlidesOnViewReport();          
+});
+
+Then('user validate count of mapped images', async function(){
+     await this.technicianPage.verifyCountOfMappedImages();
+});
+
+Then('user validate count of unmapped images', async function(){
+     await this.technicianPage.verifyCountOfUnmappedImages();          
+});
+
+Then('user validate Cancel and Download Report buttons are displayed', async function(){
+     await this.technicianPage.verifyCancelAndDownloadButtons();          
+});
+
+Then('user verify images filter functionality in dropdown', async function(){
+     await this.technicianPage.verifyImageFilterFunctionality();          
+});
 
 

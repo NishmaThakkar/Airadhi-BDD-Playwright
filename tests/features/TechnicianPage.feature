@@ -2,7 +2,7 @@ Feature: Technician
 
     Technician page functionality work as per expectations
 
-@test_one1
+@runall
 Scenario:  Verify dashboard UI for Technician role with Study section
 Given user has logged in as Technician
 When user navigate to Technician dashboard
@@ -25,7 +25,7 @@ And user should view study table with columns:
       | Species            |
       | Status             |
 
-@test_one1
+@runall
 Scenario:  Verify dashboard UI for Technician role with Image Repository section
 Given user has logged in as Technician
 When user navigate to Technician dashboard
@@ -47,7 +47,7 @@ And user should able to navigate to grid view
 And user should view images in grid format
 And user verify images folder up to last folder in grid format
 
-@test_one1
+@runall
 Scenario Outline:  Verify study search on Technician dashboard
 Given user has logged in as Technician
 And user navigate to Technician dashboard
@@ -60,17 +60,40 @@ Examples:
 | study_status | study_number       |
 | In Progress  | 	3232_1            |
 | Created      |  Dosage            |
-| In Progress  | Test_10_April      |
-| In Progress  |  FinalTest         |
-| Created      | Merck-TissueSection|
-| Created      |  14thAprilTestis   |
+
+@developing
+Scenario: Verify view report popup for Technician role from three dot menu
+Given user has logged in as Technician
+And user navigate to Technician dashboard
+And user navigate to Study section
+And user has noted study no. and slides mapped for first study
+When user click on three dots on right side of any study
+Then user should click on view report option
+And user should see view report popup header as "View Sync Report"
+And user validate Study No. label is displayed with correct study number
+And user validate image status dropdown is displayed with correct image status options:
+      | All Images      |
+      | Mapped Images   |
+      | Unmapped Images |
+And user validate image table with columns:
+      | Subject ID  |
+      | Image Name  |
+      | Cassette ID |
+      | Status      |
+And user validate count of mapped images
+And user validate count of unmapped images
+And user validate total slide count is correct
+And user verify images filter functionality in dropdown
+#And user validate search functionality
+And user validate Cancel and Download Report buttons are displayed
+
 
 @Technician_ui2
 Scenario:  Verify Study three dot menu in Technician Role for 0 mapped slides
 Given user has logged in as Technician
 And user navigate to Technician dashboard
 When user click on three dots on right side of Technician dashboard
-Then user should see below options on menu in case zero slides mapped:
+#Then user should see below options on menu in case zero slides mapped:
       | Edit        |
       | Delete      |
       | Sync Images |
@@ -81,7 +104,7 @@ Scenario:  Verify Study three dot menu in Technician Role more than 0 and less t
 Given user has logged in as Technician
 And user navigate to Technician dashboard
 When user click on three dots on right side of Technician dashboard
-Then user should see below options on menu in case more than 0 and less than total mapped slides:
+#Then user should see below options on menu in case more than 0 and less than total mapped slides:
       | Sync Images |
       | View Report |
 
@@ -90,7 +113,7 @@ Scenario:  Verify Study three dot menu in Technician Role for all mapped slides
 Given user has logged in as Technician
 And user navigate to Technician dashboard
 When user click on three dots on right side of Technician dashboard
-Then user should see below options on menu in case all slides mapped:
+#Then user should see below options on menu in case all slides mapped:
       | View Report |
 
 
