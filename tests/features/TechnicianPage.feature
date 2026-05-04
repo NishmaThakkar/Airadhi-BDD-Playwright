@@ -2,7 +2,7 @@ Feature: Technician
 
     Technician page functionality work as per expectations
 
-@runall
+@dev
 Scenario:  Verify dashboard UI for Technician role with Study section
 Given user has logged in as Technician
 When user navigate to Technician dashboard
@@ -25,7 +25,7 @@ And user should view study table with columns:
       | Species            |
       | Status             |
 
-@runall
+@dev
 Scenario:  Verify dashboard UI for Technician role with Image Repository section
 Given user has logged in as Technician
 When user navigate to Technician dashboard
@@ -47,7 +47,7 @@ And user should able to navigate to grid view
 And user should view images in grid format
 And user verify images folder up to last folder in grid format
 
-@runall
+@dev
 Scenario Outline:  Verify study search on Technician dashboard
 Given user has logged in as Technician
 And user navigate to Technician dashboard
@@ -58,10 +58,11 @@ Then user should see study displayed on table with that study number
 And user should see study status displayed on table as "<study_status>" for that "<study_number>"
 Examples:
 | study_status | study_number       |
-| In Progress  | 	3232_1            |
+| In Progress  | 	ET                |
 | Created      |  Dosage            |
 
-@developing
+#@developed
+@dev
 Scenario: Verify view report popup for Technician role from three dot menu
 Given user has logged in as Technician
 And user navigate to Technician dashboard
@@ -87,33 +88,46 @@ And user verify images filter functionality in dropdown
 #And user validate search functionality
 And user validate Cancel and Download Report buttons are displayed
 
-
-@Technician_ui2
-Scenario:  Verify Study three dot menu in Technician Role for 0 mapped slides
+#@developed
+Scenario: Verify slides mapped count inside study is correct
 Given user has logged in as Technician
 And user navigate to Technician dashboard
-When user click on three dots on right side of Technician dashboard
-#Then user should see below options on menu in case zero slides mapped:
-      | Edit        |
-      | Delete      |
-      | Sync Images |
-      | View Report |
+And user navigate to Study section
+When user navigate inside the study
+And user select "sex" from view by dropdown
+And user noted total slide count inside study visiting each folder
+And user click on Study Listing text
+And user click on i icon of study
+And user noted slides mapped count from slide details popup
+And user click on three dots on right side of any study
+And user should click on view report option
+And user filters "Mapped Images" on view report
+Then user verify that slides count from study and slides mapped count on details pop up are matched
 
-@Technician_ui2
-Scenario:  Verify Study three dot menu in Technician Role more than 0 and less than total mapped slides
+#@developed
+Scenario: Verify image details pop up from i icon
 Given user has logged in as Technician
 And user navigate to Technician dashboard
-When user click on three dots on right side of Technician dashboard
-#Then user should see below options on menu in case more than 0 and less than total mapped slides:
-      | Sync Images |
-      | View Report |
+And user navigate to Study section
+And user noted studyadmin, pathologist, species from study listing page
+When user click on i icon of study
+Then user validate slide details table with columns:
+      | Image Name  |
+      | Cassette ID |
+      | Tissues     |
+      | Sex         |
+      | Subject ID  |
+      | Dosage      |
+And user validate studyadmin, pathologist, species from details pop up
 
-@Technician_ui2
-Scenario:  Verify Study three dot menu in Technician Role for all mapped slides
+@runme
+Scenario: Verify study miscellaneous details
 Given user has logged in as Technician
 And user navigate to Technician dashboard
-When user click on three dots on right side of Technician dashboard
-#Then user should see below options on menu in case all slides mapped:
-      | View Report |
+And user navigate to Study section
+When user navigate inside the study
+Then user verify view by dropdown present inside study
+And user should view select All checkbox is working
+
 
 

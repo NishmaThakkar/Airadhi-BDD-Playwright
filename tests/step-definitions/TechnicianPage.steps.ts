@@ -163,4 +163,57 @@ Then('user verify images filter functionality in dropdown', async function(){
      await this.technicianPage.verifyImageFilterFunctionality();          
 });
 
+When('user navigate inside the study', async function(){
+     await this.technicianPage.navigateInsideStudy();
+});
 
+When('user select {string} from view by dropdown', async function(value){
+     await this.technicianPage.selectValuefromViewByDropdown(value);
+});
+
+When('user noted total slide count inside study visiting each folder', async function(){
+     await this.technicianPage.noteTotalSlidesInSlideFolder();
+});
+
+When('user click on Study Listing text', async function(){
+     await this.technicianPage.clickStudyListingText();
+});
+
+When('user click on i icon of study', async function(){
+     await this.technicianPage.clickiIconOnStudy();
+});
+
+When('user noted slides mapped count from slide details popup', async function(){
+     await this.technicianPage.noteSlidesMappedOnDetailsPopup();
+});
+
+When('user filters {string} on view report', async function(mapped_img){
+     await this.technicianPage.filterImagesOnViewReport(mapped_img);
+});
+
+Then('user verify that slides count from study and slides mapped count on details pop up are matched', async function(){
+     await this.technicianPage.verifySlideCountsMatched();
+});
+
+Then('user validate slide details table with columns:', async function (dataTable) {
+     const slide_details_cols = dataTable.raw().flat(); // 	[Image Name, Cassette ID, Tissues, Sex, Subject ID, Dosage]
+     for (const col of slide_details_cols) {
+     await this.technicianPage.verifySlideDetailTableColumns(col);
+  }
+});
+
+When('user noted studyadmin, pathologist, species from study listing page', async function(){
+     await this.technicianPage.noteStudyRoleFromStudyList();
+});
+
+When('user validate studyadmin, pathologist, species from details pop up', async function(){
+     await this.technicianPage.verifyStudyRoleFromDetails();
+});
+
+Then('user verify view by dropdown present inside study', async function(){
+     await this.technicianPage.verifyViewByDropdownInStudy();
+});
+
+Then('user should view select All checkbox is working', async function(){
+     await this.technicianPage.verifySelectAllCheckBox();
+});
