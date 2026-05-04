@@ -1,4 +1,6 @@
 import { Page, expect } from '@playwright/test';
+import { error } from 'console';
+import { exitCode } from 'process';
 
 
 export class TechnicianPage{
@@ -364,6 +366,7 @@ export class TechnicianPage{
     // Method to navigate to Study section
     async navigateToStudySection() {
         try {
+            await this.page.waitForTimeout(1000);
             const studySectionLink = await this.page.getByText('Study', { exact: true });
             await studySectionLink.click();
             await this.page.waitForTimeout(2000);
@@ -582,6 +585,7 @@ export class TechnicianPage{
     }
 
     // Method to verify image filter functionality in dropdown on view report popup
+    private FilteredMappedCount: number = 0; 
     async verifyImageFilterFunctionality() {
         try {
             console.log('-------------Mapped Count----------------------');
@@ -595,9 +599,9 @@ export class TechnicianPage{
             const expectedOptionForMapped = 'Mapped Images';
             expect(selectedOption?.trim()).toBe(expectedOptionForMapped);
             
-            const FilteredmappedCount = await this.page.locator('tbody.slideData tr td:last-child p',{ hasText: 'Mapped' }).count();
-            console.log('Filtered mapped count: ',FilteredmappedCount);
-            expect(FilteredmappedCount).toBe(this.slides_mapped_count);
+            this.FilteredMappedCount = await this.page.locator('tbody.slideData tr td:last-child p',{ hasText: 'Mapped' }).count();
+            console.log('Filtered mapped count: ',this.FilteredMappedCount);
+            expect(this.FilteredMappedCount).toBe(this.slides_mapped_count);
             console.log('slides mapped count from UI:',this.slides_mapped_count);
             console.log('Image filter functionality for mapped images in dropdown on view report popup is working as expected');
 
@@ -620,6 +624,283 @@ export class TechnicianPage{
             throw new Error('Failed to verify image filter functionality in dropdown on view report popup: ' + error);
         }
     }
-  
+
+    // Method to navigate inside study
+
+    async navigateInsideStudy(){
+        try{
+                const studyLocator = this.page.locator('.orangeText').first();
+
+                const study_no = (await studyLocator.textContent())?.trim();
+                console.log('Study No:',study_no);
+
+                await studyLocator.click();
+
+                await expect(this.page.locator('.activeStudyNameText')).toHaveText(study_no!);
+                const study_inside = await this.page.locator('.activeStudyNameText').textContent();
+                console.log('Study no inside :',study_inside);
+        }
+        catch(error){
+            throw new Error("Failed to verify study no. on UI and inside study: "+ error);
+        }
+    }
+
+    // Method to select value from View By dropdown
+    async selectValuefromViewByDropdown(value: string){
+        try{
+            const viewby_dropdown = this.page.locator('//mat-form-field[.//mat-label[normalize-space()="View By"]]//div[contains(@class,"mat-select-trigger")]');
+
+        // Open dropdown
+            await viewby_dropdown.click({ force: true });
+            const panel = this.page.locator('.cdk-overlay-pane');
+            await panel.waitFor({ state: 'visible' });
+
+        // Select options
+            const opt = panel.locator(`mat-option:has-text("${value}")`);
+            await opt.click();
+            await expect(opt,`Value "${value}" should be selected`).toHaveAttribute('aria-selected', 'true');
+          //  await this.page.waitForTimeout(5000);  
+        }
+        catch(error){
+            throw new Error("Failed to select sex from view by dropdown: "+ error);
+        }
+    }
+
+    //Method to check if folders are available
+    async totalFolderInStudy(): Promise<boolean>{
+        try {
+           
+            const folder_locator = this.page.locator('div.indvStudy  div.folderIconDiv');
+            this.folder_count = await folder_locator.count();
+            return this.folder_count>0;
+
+        } catch (error) {
+            throw new Error("Failed find folder:"+error);
+        }
+    }
+
+    // Method to navigate inside slide folder
+    private folder_count: number = 0;
+    private total_images_count: number = 0;  // Total images count from each folder inside study
+    private ind_fold_img: number = 0;
+    async noteTotalSlidesInSlideFolder() {
+        try {
+            //slide folder locator
+            const folder_locator = this.page.locator('div.indvStudy  div.folderIconDiv');
+            await this.page.waitForTimeout(2000);
+            //Folder count
+            this.folder_count = await folder_locator.count();
+            console.log('Folders:', this.folder_count);
+            console.log('Type:', typeof this.folder_count);
+
+            //check if min 1 folder is available
+            if(this.folder_count>0){
+                //if min 1 folder is available, click on each folder
+                for(let i=0; i<this.folder_count; i++){
+                    const next_folder = folder_locator.nth(i);
+                    await next_folder.click();
+                    await this.page.waitForTimeout(4000);
+                    //Find no. of slides
+                    const image_locator = this.page.locator('div.indvImage');
+                    this.ind_fold_img = await image_locator.count();
+                    console.log("Individual slides in folder:"+this.ind_fold_img);
+
+                    //Add count in variable
+                    this.total_images_count += this.ind_fold_img;
+
+                    //Come outside
+                    await this.page.locator('.studyListingNavigation .activeStudyNameText').first().click();
+                }
+                    console.log("Total images: "+this.total_images_count);
+                }
+                else{
+                    throw new Error('No data available');
+                }
+        } catch (error) {
+            throw new Error("Failed to verify slide count in folder: " + error);
+        }
+    
+    }
+
+    //Method to click study listing text
+    async clickStudyListingText(){
+        await this.page.getByText('Study Listing').click({force:true});
+    }
+
+    //Method to click i icon on study
+    async clickiIconOnStudy(){
+        try {
+            const icon = this.page.locator('#studyDetailIcon').first();
+            await icon.scrollIntoViewIfNeeded();
+            await icon.click({force:true});
+            await this.page.waitForTimeout(2000);
+        } catch (error) {
+            throw new Error("Failed to click on i icon: "+error);
+        }     
+    }
+    
+    //Method to note Slides Mapped On Details Popup
+    private slidesMappedCountOnDetailsPopup: number = 0;
+    async noteSlidesMappedOnDetailsPopup(){
+        try{
+            await this.page.waitForTimeout(2000);
+            const text = await this.page.locator('label:has-text("Slides Mapped") + span').innerHTML();
+            this.slidesMappedCountOnDetailsPopup = parseInt(text.split('/')[0].trim(), 10);
+            await this.page.locator('.headerIcon i').click({force:true}); //Click cross/close icon of Details popup
+            console.log('Images mapped count on details pop up: '+this.slidesMappedCountOnDetailsPopup); // 46
+        }
+        catch(error)
+        {
+            throw new Error("Failed to note slide count from details pop up of i icon: "+error);
+        }
+    }
+
+    //Method to filter images on view report
+    async filterImagesOnViewReport(mapped_img: string){
+        try {
+            const dropdown = this.page.locator('.reportMappingDiv mat-select[role="combobox"]');
+            await dropdown.click();
+            await this.page.waitForSelector('mat-option');
+            await this.page.locator(`//mat-option[normalize-space()="${mapped_img}"]`).click();
+            await this.page.waitForTimeout(1000); 
+        } catch (error) {
+            throw new Error("Failed to filter images on view report popup: "+error);
+        }
+              
+    }
+
+    //Method to verify slides total count from study and slide count from details pop up are matched
+    async verifySlideCountsMatched(){
+        try {
+            await this.page.waitForTimeout(2000);
+            expect (this.slidesMappedCountOnDetailsPopup === this.FilteredMappedCount && this.total_images_count === this.slidesMappedCountOnDetailsPopup && this.total_images_count === this.FilteredMappedCount) 
+            console.log('All three are equal');
+        } catch (error) {
+            throw new Error("Failed to verify slide count are matching or not: "+error);
+        }
+    }
+
+    // Method to verify slide details table with columns on Details popup
+    async verifySlideDetailTableColumns(option: string) {
+        try {
+            const header = this.page.locator('div.panelRow table thead th .mat-sort-header-content', { hasText: option });
+            await expect(header).toBeVisible({ timeout: 3000 });
+        } catch (error) {
+            throw new Error('Failed to verify slide details table columns on Details popup: ' + error);
+        }
+    }
+
+    //Method to note Study Admin, Pathologist and Species from study list
+    private study_admin_study_list: string='';
+    private pathologist_study_list: string='';
+    private species_study_list: string='';
+    private study_no_study_list: string='';
+    async noteStudyRoleFromStudyList(){
+        try {
+            this.study_admin_study_list = await this.page.locator('.cdk-column-studyDirector span').first().innerText();
+            this.pathologist_study_list = await this.page.locator('.cdk-column-pathologist span').first().innerText();
+            this.species_study_list = await this.page.locator('.cdk-column-species span').first().innerText();
+            this.study_no_study_list = await this.page.locator('.orangeText').first().innerText();
+            console.log('Study Admin from list -------->'+ this.study_admin_study_list);
+            console.log('Pathologist from list -------->'+ this.pathologist_study_list);
+            console.log('Species from list -------->'+ this.species_study_list);
+            console.log('Study from list -------->'+ this.study_no_study_list);
+        } catch (error) {
+            throw new Error('Failed to note study details from study listing:'+error);
+        }
+    }
+
+    //Method to note Study Admin, Pathologist and Species from details pop up
+    private study_admin_details: string='';
+    private pathologist_details: string='';
+    private species_study_details: string='';
+
+    async verifyStudyRoleFromDetails(){
+        try {
+            console.log('------Details pop-----');
+            const studyNo_details = await this.page.locator('label:has-text("Study No.") + span').innerText();
+            this.study_admin_details = await this.page.locator('label:has-text("Study Administrator : ") + span').innerText();
+            this.pathologist_details = await this.page.locator('label:has-text("Pathologist : ") + span').innerText();
+            this.species_study_details = await this.page.locator('label:has-text("Species : ") + span').innerText();
+
+            expect(this.study_no_study_list).toBe(studyNo_details.trim());
+            expect(this.study_admin_study_list).toBe(this.study_admin_details.trim());
+            expect(this.pathologist_study_list).toBe(this.pathologist_details.trim());
+            expect(this.species_study_list).toBe(this.species_study_details.trim());
+
+            console.log("Study No popup : "+studyNo_details);
+            console.log("Study Admin popup : "+this.study_admin_details);
+            console.log("Study Pathologist popup : "+this.pathologist_details);
+            console.log("Study Species popup : "+this.species_study_details);
+        } catch (error) {
+            throw new Error('Failed to verify values from Details popup: '+error);
+        }
+    }
+
+    //Method to check dropdown values in study
+    async verifyViewByDropdownInStudy(){
+        try {
+            const viewby_dropdown = this.page.locator('//mat-form-field[.//mat-label[normalize-space()="View By"]]//div[contains(@class,"mat-select-trigger")]');
+            viewby_dropdown.isVisible;
+          //  console.log("Yes DD :"+viewby_dropdown.isVisible);
+        // Open dropdown
+            await viewby_dropdown.click({ force: true });
+            const panel = this.page.locator('.cdk-overlay-pane');
+            await panel.waitFor({ state: 'visible' });
+
+        // Select options
+            await this.page.waitForTimeout(2500);
+            const Tissue_dropdown = await panel.locator('mat-option:has-text("Tissue")').innerText();
+            const Subject_ID_dropdown = await panel.locator('mat-option:has-text("Subject ID")').innerText();
+            const Dosage_dropdown = await panel.locator('mat-option:has-text("Dosage")').innerText();
+            const Cassette_opt = await panel.locator('mat-option:has-text("Cassette")').innerText();
+            const Sex_opt = await panel.locator('mat-option:has-text("Sex")').innerText();
+
+        // Verify all options are displayed
+            await this.page.waitForTimeout(2500);
+            expect(Tissue_dropdown).toBe('Tissue');
+            expect(Subject_ID_dropdown).toBe('Subject ID');
+            expect(Dosage_dropdown).toBe('Dosage');
+            expect(Cassette_opt).toBe('Cassette');
+            expect(Sex_opt).toBe('Sex');
+            await viewby_dropdown.click({ force: true });
+        } catch (error) {
+            throw new Error('Failed to verify Dropdown options: '+error);
+        }
+    }
+
+    // Method to verify Select All checkbox is working
+    async verifySelectAllCheckBox(){
+        try {
+            if(await this.totalFolderInStudy()){
+
+            const selectAllText = await this.page.locator('.mat-checkbox-label').first().innerText();
+            //this.page.locator('div.selectAllDiv').getByText('Select All');
+            console.log(selectAllText);
+            expect(selectAllText.trim()).toBe('Select All');
+
+
+      //      console.log('Yes, Folder Exists !');
+            const selectAllCheckbox = this.page.locator('div.selectAllDiv .mat-checkbox-inner-container');
+            
+            await expect(selectAllCheckbox).toBeVisible();
+            await expect(selectAllCheckbox).not.toBeChecked();
+            selectAllCheckbox.click();
+            await expect(selectAllCheckbox).toBeChecked();
+            await this.page.waitForTimeout(1500);
+
+            
+        }
+        else{
+            throw new Error("No Data Available:"+error);
+        }
+        } catch (error) {
+            throw new Error('Failed to verify checkbox: '+error);
+        }
+        
+
+    }
+
+
 }
 
