@@ -1,10 +1,11 @@
 import { Page, expect } from '@playwright/test';
+import { pwConfig } from '../tests/config/playwrightConfig';
 
 export class LoginPage {
   constructor(private page: Page) {}
 
   async navigate() {
-    await this.page.goto('https://airadhi-merck-uat.airamatrix.in/AIRADHI/login');
+    await this.page.goto(pwConfig.use?.baseURL|| '');
   }
 
   async login(email: string, password: string) {
