@@ -14,7 +14,6 @@ module.exports = {
      formatOptions: {
       resultsDir: 'allure-results'
     },
-    retry: 2,
   }
 };
 

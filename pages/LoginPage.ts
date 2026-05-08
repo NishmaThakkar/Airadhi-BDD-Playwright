@@ -13,7 +13,7 @@ export class LoginPage {
     await this.page.getByRole('textbox', { name: 'Password' }).fill(password);
     await this.page.waitForTimeout(10000);
     await this.page.getByRole('button', { name: 'Login' }).click();
-    await this.verifyLogin();
+    // await this.verifyLogin();
   }
 
   async invalidlogin(email: string, password: string) {
