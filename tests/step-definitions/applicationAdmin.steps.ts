@@ -1,7 +1,6 @@
 import { Given, When, Then} from '@cucumber/cucumber';
 import { CustomWorld  } from '../../tests/fixtures/world';
 
-
 Given('Application admin should be selected', async function (this: CustomWorld) {
    await this.applicationAdmin.selectApplicationAdmin();
 });
@@ -34,7 +33,6 @@ When('Admin verifies the state of the toggles', async function (this: CustomWorl
               await this.page.waitForTimeout(2000);
               console.log('Project toggle is ON');
                   await this.TechnicianPage.displayCreateStudyIcon();
-
         }
         else
         {     

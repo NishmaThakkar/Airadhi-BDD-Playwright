@@ -53,7 +53,6 @@ export class ApplicationAdmin {
         await this.applicationAdminText.click();
     }
 
-
     async sidePanelOptions() {
         await expect(this.configureOption).toBeVisible();
         await expect(this.usersOption).toBeVisible();
