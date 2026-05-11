@@ -10,9 +10,9 @@ export class CustomWorld extends World {
   page!: Page;
   loginPage!: LoginPage;
   applicationAdmin!: ApplicationAdmin;
-  TechnicianPage!: TechnicianPage;
+  technicianPage!: TechnicianPage;
   expect = expect;
- // LoginPage!: LoginPage;
+ 
 
 
 }
