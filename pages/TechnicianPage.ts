@@ -3,12 +3,12 @@ import { error } from 'console';
 import { exitCode } from 'process';
 
 
-export class TechnicianPage{
-    constructor(private page: Page) {}
+export class TechnicianPage {
+    constructor(private page: Page) { }
     private repo_name: string = '';
-  //  private study_number: string = '';
+    //  private study_number: string = '';
 
-    async loginTechnician(){
+    async loginTechnician() {
         await this.page.goto('https://airadhi-merck-uat.airamatrix.in/AIRADHI/login');
         await this.page.getByRole('textbox', { name: 'Email ID' }).fill("nishma.thakkar@airamatrix.com");
         await this.page.getByRole('textbox', { name: 'Password' }).fill("Password@1");
@@ -17,26 +17,62 @@ export class TechnicianPage{
     }
 
     // Method to select Technician role from dropdown
-    async selectTechnicianRole(){
+    async selectTechnicianRole() {
         try {
             await this.page.getByText('Application Admin').click();
-            await this.page.getByRole('option',{ name:'Technician' }).click();
+            await this.page.getByRole('option', { name: 'Technician' }).click();
             await this.page.waitForTimeout(2000);
         } catch (error) {
             throw new Error('Failed to select Technician role: ' + error);
         }
     }
 
+    async verifyCreateStudyButton() {
+        await this.page.getByTitle('Create Study').click();
+        await expect(this.page.getByText('CancelCreate')).toBeVisible();
+    }
+
+    async navigateToCreateStudyPage(excelFilePath: string, templateName: string) {
+        try {
+            const filePath = `./test-data/${excelFilePath}`;
+            const templateSelector = templateName;
+            await expect(this.page.locator('#mat-select-value-5')).toBeVisible();
+            await this.page.getByRole('combobox').first().click();
+            await this.page.getByText(templateSelector).click();
+            await this.page.setInputFiles('input[type="file"]', filePath);
+            await this.page.getByRole('button', { name: 'Create' }).click();
+        } catch (error) {
+            throw new Error('Failed to navigate to create study page: ' + error);
+        }
+    }
+
+    async enterStudyDetails() {
+        await this.page.locator('div').filter({ hasText: /^Study title$/ }).nth(3).click();
+        await this.page.getByRole('textbox', { name: 'Study title' }).fill('Study1');
+        await this.page.getByRole('textbox', { name: 'Study title' }).press('Tab');
+        await this.page.getByRole('textbox', { name: 'Project No.' }).fill('Proj-09');
+        await this.page.getByRole('textbox', { name: 'Project No.' }).press('Tab');
+        await this.page.getByRole('textbox', { name: 'Project No.' }).click();
+        await this.page.locator('div').filter({ hasText: /^Study Administrator\*$/ }).nth(3).click();
+        await this.page.getByText('Nishma Thakkar', { exact: true }).click();
+        await expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden();
+        await this.page.locator('div').filter({ hasText: /^Pathologist\*$/ }).nth(3).click();
+        await this.page.getByRole('option', { name: 'Nishma Thakkar' }).click();
+        await expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden()
+        await this.page.locator('div').filter({ hasText: /^Species \*$/ }).nth(3).click();
+        await this.page.getByText('Mice').click();
+
+    }
     // Method to verify left panel sections
     async verifyLeftPanelSection(section: string) {
         try {
             const locator = this.page.locator('p', { hasText: section });
             await expect(locator).toBeVisible();
             await this.page.waitForTimeout(2000);
-         } catch (error) {
+        } catch (error) {
             throw new Error('Failed to verify left panel section: ' + error);
-         }
-     }
+        }
+    }
 
     // Method to verify status dropdown options
     async verifyStatusDropdownOption() {
@@ -53,16 +89,16 @@ export class TechnicianPage{
         for (const option of options) {
             const opt = panel.locator(`mat-option:has-text("${option}")`);
             await opt.click();
-            await expect(opt,`Checkbox "${option}" should be selected`).toHaveAttribute('aria-selected', 'true');
+            await expect(opt, `Checkbox "${option}" should be selected`).toHaveAttribute('aria-selected', 'true');
         }
-   
+
         // Deselect options and Verify checkboxes are unselected
         for (const option of options) {
             const opt = panel.locator(`mat-option:has-text("${option}")`);
             await opt.click();
-            await expect(opt,`Checkbox "${option}" should be unselected`).toHaveAttribute('aria-selected', 'false');
+            await expect(opt, `Checkbox "${option}" should be unselected`).toHaveAttribute('aria-selected', 'false');
         }
-}
+    }
 
     // Method to verify search box functionality on Study Section
     async verifySearchBox() {
@@ -73,17 +109,17 @@ export class TechnicianPage{
             await searchBox.fill('Test Search', { force: true });
             await this.page.waitForTimeout(2500);
             await expect(searchBox).toHaveValue('Test Search', { timeout: 5000 });
-            await searchBox.fill(''); 
+            await searchBox.fill('');
             await expect(searchBox).toHaveValue('');
         } catch (error) {
             throw new Error('Failed to verify search box: ' + error);
         }
 
-}
+    }
 
     // Method to verify presence of plus icon for creating study
     async displayCreateStudyIcon() {
-       const createStudyBtn = this.page.locator('button.searchbtn[title="Create Study"]');
+        const createStudyBtn = this.page.locator('button.searchbtn[title="Create Study"]');
         // Assert the button is visible
         await expect(createStudyBtn).toBeVisible({ timeout: 5000 });
 
@@ -94,19 +130,19 @@ export class TechnicianPage{
 
 
     // Method to verify study table columns
-     async verifyStudyTableColumn(column: string) {
-         try {
-             // Locate by class and text
+    async verifyStudyTableColumn(column: string) {
+        try {
+            // Locate by class and text
             const studyNoHeader = this.page.locator('div.mat-sort-header-content', { hasText: column });
             await expect(studyNoHeader).toBeVisible();
             await this.page.waitForTimeout(2500);
-         } catch (error) {
-             throw new Error('Failed to verify study table column: ' + error);
-         }
-     }
+        } catch (error) {
+            throw new Error('Failed to verify study table column: ' + error);
+        }
+    }
 
-     // Method to navigate to Image Repository section
-     async navigateToImageRepository() {
+    // Method to navigate to Image Repository section
+    async navigateToImageRepository() {
         try {
             const imageRepoLink = this.page.getByText('Image Repository');
             await imageRepoLink.click();
@@ -175,7 +211,7 @@ export class TechnicianPage{
             await expect(this.page.locator('tbody[role="rowgroup"]')).toBeVisible({ timeout: 5000 });
         }
         catch (error) {
-                throw new Error('Failed to verify list view is displayed: ' + error);
+            throw new Error('Failed to verify list view is displayed: ' + error);
         }
     }
 
@@ -184,7 +220,7 @@ export class TechnicianPage{
         try {
             await this.page.getByTitle('List View').click();
             await this.page.waitForTimeout(2000);
-           //wait expect(gridViewIcon).toBeVisible({ timeout: 5000 });
+            //wait expect(gridViewIcon).toBeVisible({ timeout: 5000 });
         } catch (error) {
             throw new Error('Failed to navigate to grid view: ' + error);
         }
@@ -197,7 +233,7 @@ export class TechnicianPage{
             await expect(folders.first()).toBeVisible({ timeout: 5000 });
         }
         catch (error) {
-                throw new Error('Failed to verify grid view is displayed: ' + error);
+            throw new Error('Failed to verify grid view is displayed: ' + error);
         }
     }
 
@@ -212,41 +248,41 @@ export class TechnicianPage{
         }
     }
 
-    async verifyImageNameListView(){
+    async verifyImageNameListView() {
         await this.page.locator('[title="Slide Preview"]').first().click();
         await this.page.waitForTimeout(2000);
         const firstRowImageName = await this.page.locator('tbody[role="rowgroup"] tr').first().locator('span.imageRepoNameRow').textContent();
         console.log(firstRowImageName?.trim());
-       // console.log('This is image');
+        // console.log('This is image');
 
         const imageName = await this.page.locator('div.imgnavigation span.repoImgNameText').textContent();
         console.log(imageName?.trim());
 
-        if(imageName?.trim() === firstRowImageName?.trim()){
-            await expect (this.page.locator('div.repoImgPreview img')).toBeVisible({ timeout: 5000 });
+        if (imageName?.trim() === firstRowImageName?.trim()) {
+            await expect(this.page.locator('div.repoImgPreview img')).toBeVisible({ timeout: 5000 });
             console.log('Successfully navigated to image details');
         }
-        else{
+        else {
             throw new Error('Failed to navigate to image details : Image name does not match');
         }
 
     }
 
-    async verifyImageNameGridView(){
+    async verifyImageNameGridView() {
         await this.page.locator('.indvFolderData').locator('mat-icon', { hasText: 'remove_red_eye' }).first().click();
         await this.page.waitForTimeout(2000);
         const firstRowImageName = await this.page.locator('div.rightUpperDiv .indvTileName').first().textContent();
         console.log(firstRowImageName?.trim());
-       // console.log('This is image');
+        // console.log('This is image');
 
         const imageName = await this.page.locator('div.imgnavigation span.repoImgNameText').textContent();
         console.log(imageName?.trim());
 
-        if(imageName?.trim() === firstRowImageName?.trim()){
-            await expect (this.page.locator('div.repoImgPreview img')).toBeVisible({ timeout: 5000 });
+        if (imageName?.trim() === firstRowImageName?.trim()) {
+            await expect(this.page.locator('div.repoImgPreview img')).toBeVisible({ timeout: 5000 });
             console.log('Successfully navigated to image details');
         }
-        else{
+        else {
             throw new Error('Failed to navigate to image details : Image name does not match');
         }
     }
@@ -259,7 +295,7 @@ export class TechnicianPage{
         const timestamp = (await timestampLocator.first().textContent())?.trim();
         console.log('Timestamp found:', timestamp);
         const regex = /^\d{2}-\d{2}-\d{4} \| \d{2}:\d{2}:\d{2}$/;
-        
+
         if (!timestamp) {
             throw new Error('Timestamp is null or empty');
         }
@@ -291,12 +327,11 @@ export class TechnicianPage{
                     await this.verifyImageNameListView();
                     await this.verifyTimestampFormat();
                     break;
-                } 
-                else 
-                    {
-                        console.log('No matching attribute found');
-                        break; // Exit the loop if neither element is found
-                    }
+                }
+                else {
+                    console.log('No matching attribute found');
+                    break; // Exit the loop if neither element is found
+                }
             }
         }
         catch (error) {
@@ -304,7 +339,7 @@ export class TechnicianPage{
         }
     }
 
-       //GRID FORMAT
+    //GRID FORMAT
     // Method to click on first folder or image and verify navigation up to last folder in grid format
     async clickAndVerifyImgFolderGridView() {
         try {
@@ -319,12 +354,11 @@ export class TechnicianPage{
                 else if (hasEyeIcon) {
                     await this.verifyImageNameGridView();
                     break;
-                } 
-                else 
-                    {
-                        console.log('No matching attribute found');
-                        break; // Exit the loop if neither element is found
-                    }
+                }
+                else {
+                    console.log('No matching attribute found');
+                    break; // Exit the loop if neither element is found
+                }
             }
         }
         catch (error) {
@@ -335,7 +369,7 @@ export class TechnicianPage{
     // Method to navigate back to image repository from image details
     async navigateToImgRepoBack() {
         try {
-            await this.page.locator('div.repoFolderSelection span.selectionFolderNames', { hasText: this.repo_name } ).click();
+            await this.page.locator('div.repoFolderSelection span.selectionFolderNames', { hasText: this.repo_name }).click();
             await this.page.waitForTimeout(2000);
         } catch (error) {
             throw new Error('Failed to navigate back to image repository: ' + error);
@@ -345,18 +379,18 @@ export class TechnicianPage{
     // Method to select status of study from dropdown
     async selectStudyStatus(status: string) {
         try {
-        const dropdown = this.page.locator('//mat-form-field[.//mat-label[normalize-space()="Status"]]//div[contains(@class,"mat-select-trigger")]');
-        
-        // Open dropdown
-        await dropdown.click({ force: true });
-        const panel = this.page.locator('.cdk-overlay-pane');
-        await panel.waitFor({ state: 'visible' });
+            const dropdown = this.page.locator('//mat-form-field[.//mat-label[normalize-space()="Status"]]//div[contains(@class,"mat-select-trigger")]');
 
-        // Select options
-        const opt = panel.locator(`mat-option:has-text("${status}")`);
-        await opt.click();
-        await expect(opt,`Checkbox "${status}" should be selected`).toHaveAttribute('aria-selected', 'true');
-       
+            // Open dropdown
+            await dropdown.click({ force: true });
+            const panel = this.page.locator('.cdk-overlay-pane');
+            await panel.waitFor({ state: 'visible' });
+
+            // Select options
+            const opt = panel.locator(`mat-option:has-text("${status}")`);
+            await opt.click();
+            await expect(opt, `Checkbox "${status}" should be selected`).toHaveAttribute('aria-selected', 'true');
+
         }
         catch (error) {
             throw new Error('Failed to select study status from dropdown: ' + error);
@@ -406,7 +440,6 @@ export class TechnicianPage{
     } catch (error) {
         throw new Error('Failed to verify study is displayed with that study number: ' + error);
     }
-}
 
     // Method to verify study status is displayed on table with that study status on Technician dashboard
     async verifyStudyStatusDisplayed(study_status: string, study_number: string) {
@@ -414,14 +447,14 @@ export class TechnicianPage{
             await this.page.waitForLoadState('networkidle');
             const status_searched = await this.page.locator('[role="combobox"]:has-text("' + study_status + '") .mat-select-min-line').innerText();
             console.log('Study status searched:', status_searched);
-            const row = this.page.locator('table tbody tr', {hasText:study_number}).filter({hasText: status_searched});
+            const row = this.page.locator('table tbody tr', { hasText: study_number }).filter({ hasText: status_searched });
             console.log('Row locator for study status:', row);
             await expect(row).toBeVisible();
             const study_status_displayed = await row.locator('td.mat-column-studyStatus').innerText();
             console.log('Study status displayed:', study_status_displayed);
             expect(study_status_displayed?.trim()).toBe(study_status.trim());
         }
-        catch(error){
+        catch (error) {
             throw new Error('Failed to verify study status is displayed with that study status: ' + error);
         }
 
@@ -432,7 +465,7 @@ export class TechnicianPage{
     private slides_mapped_col: string = '';
     async userHasNotedStudyNoAndSlidesMapped() {
         try {
-            const firstStudyRow = this.page.locator('tbody tr').first();   
+            const firstStudyRow = this.page.locator('tbody tr').first();
             this.study_number = await firstStudyRow.locator('#openGalleryIcon').first().innerText();
             console.log('Study number noted:', this.study_number);
             this.slides_mapped_col = await firstStudyRow.locator('td.mat-column-slidesMapped span').innerText();
@@ -492,26 +525,26 @@ export class TechnicianPage{
 
     // Method to verify image status dropdown is displayed with correct status options in view report popup
     async verifyImageStatusOptions(expectedOptions: string[]) {
-    try {
-        const dropdown = this.page.locator('.reportMappingDiv mat-select[role="combobox"]');
-        await dropdown.click();
-        await this.page.waitForSelector('mat-option');
+        try {
+            const dropdown = this.page.locator('.reportMappingDiv mat-select[role="combobox"]');
+            await dropdown.click();
+            await this.page.waitForSelector('mat-option');
 
-        const actualOptions = await this.page.locator('mat-option').allTextContents();
+            const actualOptions = await this.page.locator('mat-option').allTextContents();
 
-        for (const option of expectedOptions) {
-            expect(actualOptions).toContain(option);
+            for (const option of expectedOptions) {
+                expect(actualOptions).toContain(option);
+            }
+
+            // close dropdown after verification
+            await this.page.locator('//mat-option[normalize-space()="All Images"]').click();
+            await this.page.waitForTimeout(2000);
+
         }
-
-        // close dropdown after verification
-        await this.page.locator('//mat-option[normalize-space()="All Images"]').click();
-        await this.page.waitForTimeout(2000);
-
-    } 
-    catch (error) {
-        throw new Error('Failed to verify image status dropdown options in view report popup: ' + error);
+        catch (error) {
+            throw new Error('Failed to verify image status dropdown options in view report popup: ' + error);
+        }
     }
-}
 
     // Method to verify image table with columns on View Report popup
     async verifyImageTableColumns(option: string) {
@@ -528,7 +561,7 @@ export class TechnicianPage{
     private mappedCount: number = 0;
     async verifyCountOfMappedImages() {
         try {
-            this.mappedCount = await this.page.locator('tbody.slideData tr td:last-child p',{ hasText: 'Mapped' }).count();
+            this.mappedCount = await this.page.locator('tbody.slideData tr td:last-child p', { hasText: 'Mapped' }).count();
             console.log('Count of mapped images displayed in view report popup:', this.mappedCount);
             console.log('Slides mapped noted for the study:', this.slides_mapped_col);
             this.total_slides_mapped = parseInt(this.slides_mapped_col.split('/')[1].trim());
@@ -546,7 +579,7 @@ export class TechnicianPage{
     async verifyCountOfUnmappedImages() {
         try {
             console.log("-----------------------------");
-            const unmappedCount = await this.page.locator('tbody.slideData tr td:last-child p',{ hasText: 'Unmapped' }).count();
+            const unmappedCount = await this.page.locator('tbody.slideData tr td:last-child p', { hasText: 'Unmapped' }).count();
             console.log('Count of unmapped images displayed in view report popup:', unmappedCount);
             console.log('Slides mapped noted for the study:', this.slides_mapped_col);
             console.log('Total slides on UI:', this.total_slides_mapped);
@@ -557,12 +590,12 @@ export class TechnicianPage{
         }
         catch (error) {
             throw new Error('Failed to verify count of unmapped images in view report popup: ' + error);
-        }       
+        }
     }
 
     // Method to verify total slide count displayed in view report popup matches with total slides noted for the study
     async verifyTotalSlidesOnViewReport() {
-        try{
+        try {
             console.log("-----------------------------");
             const rowCount = await this.page.locator('tbody.slideData tr').count();
             console.log('Total rows:', rowCount);
@@ -587,7 +620,7 @@ export class TechnicianPage{
     }
 
     // Method to verify image filter functionality in dropdown on view report popup
-    private FilteredMappedCount: number = 0; 
+    private FilteredMappedCount: number = 0;
     async verifyImageFilterFunctionality() {
         try {
             console.log('-------------Mapped Count----------------------');
@@ -600,11 +633,11 @@ export class TechnicianPage{
             const selectedOption = await this.page.locator('.reportMappingDiv mat-select[role="combobox"]').locator('.mat-select-min-line').innerText();
             const expectedOptionForMapped = 'Mapped Images';
             expect(selectedOption?.trim()).toBe(expectedOptionForMapped);
-            
-            this.FilteredMappedCount = await this.page.locator('tbody.slideData tr td:last-child p',{ hasText: 'Mapped' }).count();
-            console.log('Filtered mapped count: ',this.FilteredMappedCount);
+
+            this.FilteredMappedCount = await this.page.locator('tbody.slideData tr td:last-child p', { hasText: 'Mapped' }).count();
+            console.log('Filtered mapped count: ', this.FilteredMappedCount);
             expect(this.FilteredMappedCount).toBe(this.slides_mapped_count);
-            console.log('slides mapped count from UI:',this.slides_mapped_count);
+            console.log('slides mapped count from UI:', this.slides_mapped_count);
             console.log('Image filter functionality for mapped images in dropdown on view report popup is working as expected');
 
             console.log('-------------Unmapped Count----------------------');
@@ -618,8 +651,8 @@ export class TechnicianPage{
             const expectedOptionForUnmapped = 'Unmapped Images';
             expect(selectedOptionForMapped?.trim()).toBe(expectedOptionForUnmapped);
 
-            const FilteredUnmappedCount = await this.page.locator('tbody.slideData tr td:last-child p',{ hasText: 'Unmapped' }).count();
-            console.log('Filtered unmapped count: ',FilteredUnmappedCount);
+            const FilteredUnmappedCount = await this.page.locator('tbody.slideData tr td:last-child p', { hasText: 'Unmapped' }).count();
+            console.log('Filtered unmapped count: ', FilteredUnmappedCount);
             expect(FilteredUnmappedCount).toBe(this.unmapped_slides);
         }
         catch (error) {
@@ -635,14 +668,14 @@ export class TechnicianPage{
                 await this.page.waitForTimeout(5000);
                 const studyLocator = this.page.locator('.orangeText').first();
 
-                const study_no = (await studyLocator.textContent())?.trim();
-                console.log('Study No:',study_no);
+            const study_no = (await studyLocator.textContent())?.trim();
+            console.log('Study No:', study_no);
 
-                await studyLocator.click();
+            await studyLocator.click();
 
-                await expect(this.page.locator('.activeStudyNameText')).toHaveText(study_no!);
-                const study_inside = await this.page.locator('.activeStudyNameText').textContent();
-                console.log('Study no inside :',study_inside);
+            await expect(this.page.locator('.activeStudyNameText')).toHaveText(study_no!);
+            const study_inside = await this.page.locator('.activeStudyNameText').textContent();
+            console.log('Study no inside :', study_inside);
         }
         catch(error){
             throw new Error("Failed to navigate inside the study no. clicked OR Study no. not visible: "+ error);
@@ -654,33 +687,33 @@ export class TechnicianPage{
         try{
         const viewby_dropdown = this.page.locator('//mat-form-field[.//mat-label[normalize-space()="View By"]]//div[contains(@class,"mat-select-trigger")]');
 
-        // Open dropdown
+            // Open dropdown
             await viewby_dropdown.click({ force: true });
             const panel = this.page.locator('.cdk-overlay-pane');
             await panel.waitFor({ state: 'visible' });
 
-        // Select options
+            // Select options
             const opt = panel.locator(`mat-option:has-text("${value}")`);
             await opt.click();
-            await expect(opt,`Value "${value}" should be selected`).toHaveAttribute('aria-selected', 'true');
-          //  await this.page.waitForTimeout(5000);  
+            await expect(opt, `Value "${value}" should be selected`).toHaveAttribute('aria-selected', 'true');
+            //  await this.page.waitForTimeout(5000);  
         }
-        catch(error){
-            throw new Error("Failed to select sex from view by dropdown: "+ error);
+        catch (error) {
+            throw new Error("Failed to select sex from view by dropdown: " + error);
         }
     }
 
     //Method to check if folders are available
-    async totalFolderInStudy(): Promise<boolean>{
+    async totalFolderInStudy(): Promise<boolean> {
         try {
-           
+
             const folder_locator = this.page.locator('div.indvStudy  div.folderIconDiv');
             await folder_locator.first().waitFor({ state: 'visible', timeout: 5000 });
             this.folder_count = await folder_locator.count();
-            return this.folder_count>0;
+            return this.folder_count > 0;
 
         } catch (error) {
-            throw new Error("Failed find folder:"+error);
+            throw new Error("Failed find folder:" + error);
         }
     }
 
@@ -699,16 +732,16 @@ export class TechnicianPage{
             console.log('Type:', typeof this.folder_count);
 
             //check if min 1 folder is available
-            if(this.folder_count>0){
+            if (this.folder_count > 0) {
                 //if min 1 folder is available, click on each folder
-                for(let i=0; i<this.folder_count; i++){
+                for (let i = 0; i < this.folder_count; i++) {
                     const next_folder = folder_locator.nth(i);
                     await next_folder.click();
                     await this.page.waitForTimeout(4000);
                     //Find no. of slides
                     const image_locator = this.page.locator('div.indvImage');
                     this.ind_fold_img = await image_locator.count();
-                    console.log("Individual slides in folder:"+this.ind_fold_img);
+                    console.log("Individual slides in folder:" + this.ind_fold_img);
 
                     //Add count in variable
                     this.total_images_count += this.ind_fold_img;
@@ -716,72 +749,71 @@ export class TechnicianPage{
                     //Come outside
                     await this.page.locator('.studyListingNavigation .activeStudyNameText').first().click();
                 }
-                    console.log("Total images: "+this.total_images_count);
-                }
-                else{
-                    throw new Error('No data available');
-                }
+                console.log("Total images: " + this.total_images_count);
+            }
+            else {
+                throw new Error('No data available');
+            }
         } catch (error) {
             throw new Error("Failed to verify slide count in folder: " + error);
         }
-    
+
     }
 
     //Method to click study listing text
-    async clickStudyListingText(){
-        await this.page.getByText('Study Listing').click({force:true});
+    async clickStudyListingText() {
+        await this.page.getByText('Study Listing').click({ force: true });
     }
 
     //Method to click i icon on study
-    async clickiIconOnStudy(){
+    async clickiIconOnStudy() {
         try {
             const icon = this.page.locator('#studyDetailIcon').first();
             await icon.scrollIntoViewIfNeeded();
-            await icon.click({force:true});
+            await icon.click({ force: true });
             await this.page.waitForTimeout(2000);
         } catch (error) {
-            throw new Error("Failed to click on i icon: "+error);
-        }     
+            throw new Error("Failed to click on i icon: " + error);
+        }
     }
-    
+
     //Method to note Slides Mapped On Details Popup
     private slidesMappedCountOnDetailsPopup: number = 0;
-    async noteSlidesMappedOnDetailsPopup(){
-        try{
+    async noteSlidesMappedOnDetailsPopup() {
+        try {
             await this.page.waitForTimeout(2000);
             const text = await this.page.locator('label:has-text("Slides Mapped") + span').innerHTML();
             this.slidesMappedCountOnDetailsPopup = parseInt(text.split('/')[0].trim(), 10);
-            await this.page.locator('.headerIcon i').click({force:true}); //Click cross/close icon of Details popup
-            console.log('Images mapped count on details pop up: '+this.slidesMappedCountOnDetailsPopup); // 46
+            await this.page.locator('.headerIcon i').click({ force: true }); //Click cross/close icon of Details popup
+            console.log('Images mapped count on details pop up: ' + this.slidesMappedCountOnDetailsPopup); // 46
         }
-        catch(error)
-        {
-            throw new Error("Failed to note slide count from details pop up of i icon: "+error);
+        catch (error) {
+            throw new Error("Failed to note slide count from details pop up of i icon: " + error);
         }
     }
 
     //Method to filter images on view report
-    async filterImagesOnViewReport(mapped_img: string){
+    async filterImagesOnViewReport(mapped_img: string) {
         try {
             const dropdown = this.page.locator('.reportMappingDiv mat-select[role="combobox"]');
             await dropdown.click();
             await this.page.waitForSelector('mat-option');
             await this.page.locator(`//mat-option[normalize-space()="${mapped_img}"]`).click();
-            await this.page.waitForTimeout(1000); 
+            await this.page.waitForTimeout(1000);
         } catch (error) {
-            throw new Error("Failed to filter images on view report popup: "+error);
+            throw new Error("Failed to filter images on view report popup: " + error);
         }
-              
+
     }
 
     //Method to verify slides total count from study and slide count from details pop up are matched
-    async verifySlideCountsMatched(){
+    async verifySlideCountsMatched() {
         try {
             await this.page.waitForTimeout(2000);
-            expect (this.slidesMappedCountOnDetailsPopup === this.FilteredMappedCount && this.total_images_count === this.slidesMappedCountOnDetailsPopup && this.total_images_count === this.FilteredMappedCount) 
+            expect(this.slidesMappedCountOnDetailsPopup === this.FilteredMappedCount && this.total_images_count === this.slidesMappedCountOnDetailsPopup && this.total_images_count === this.FilteredMappedCount)
             console.log('All three are equal');
         } catch (error) {
-            throw new Error("Failed to verify slide count are matching or not: "+error);
+            throw new Error("Failed to verify slide count are matching or not: " + error);
         }
     }
 
@@ -796,31 +828,31 @@ export class TechnicianPage{
     }
 
     //Method to note Study Admin, Pathologist and Species from study list
-    private study_admin_study_list: string='';
-    private pathologist_study_list: string='';
-    private species_study_list: string='';
-    private study_no_study_list: string='';
-    async noteStudyRoleFromStudyList(){
+    private study_admin_study_list: string = '';
+    private pathologist_study_list: string = '';
+    private species_study_list: string = '';
+    private study_no_study_list: string = '';
+    async noteStudyRoleFromStudyList() {
         try {
             this.study_admin_study_list = await this.page.locator('.cdk-column-studyDirector span').first().innerText();
             this.pathologist_study_list = await this.page.locator('.cdk-column-pathologist span').first().innerText();
             this.species_study_list = await this.page.locator('.cdk-column-species span').first().innerText();
             this.study_no_study_list = await this.page.locator('.orangeText').first().innerText();
-            console.log('Study Admin from list -------->'+ this.study_admin_study_list);
-            console.log('Pathologist from list -------->'+ this.pathologist_study_list);
-            console.log('Species from list -------->'+ this.species_study_list);
-            console.log('Study from list -------->'+ this.study_no_study_list);
+            console.log('Study Admin from list -------->' + this.study_admin_study_list);
+            console.log('Pathologist from list -------->' + this.pathologist_study_list);
+            console.log('Species from list -------->' + this.species_study_list);
+            console.log('Study from list -------->' + this.study_no_study_list);
         } catch (error) {
-            throw new Error('Failed to note study details from study listing:'+error);
+            throw new Error('Failed to note study details from study listing:' + error);
         }
     }
 
     //Method to note Study Admin, Pathologist and Species from details pop up
-    private study_admin_details: string='';
-    private pathologist_details: string='';
-    private species_study_details: string='';
+    private study_admin_details: string = '';
+    private pathologist_details: string = '';
+    private species_study_details: string = '';
 
-    async verifyStudyRoleFromDetails(){
+    async verifyStudyRoleFromDetails() {
         try {
             console.log('------Details pop-----');
             const studyNo_details = await this.page.locator('label:has-text("Study No.") + span').innerText();
@@ -833,27 +865,27 @@ export class TechnicianPage{
             expect(this.pathologist_study_list).toBe(this.pathologist_details.trim());
             expect(this.species_study_list).toBe(this.species_study_details.trim());
 
-            console.log("Study No popup : "+studyNo_details);
-            console.log("Study Admin popup : "+this.study_admin_details);
-            console.log("Study Pathologist popup : "+this.pathologist_details);
-            console.log("Study Species popup : "+this.species_study_details);
+            console.log("Study No popup : " + studyNo_details);
+            console.log("Study Admin popup : " + this.study_admin_details);
+            console.log("Study Pathologist popup : " + this.pathologist_details);
+            console.log("Study Species popup : " + this.species_study_details);
         } catch (error) {
-            throw new Error('Failed to verify values from Details popup: '+error);
+            throw new Error('Failed to verify values from Details popup: ' + error);
         }
     }
 
     //Method to check dropdown values in study
-    async verifyViewByDropdownInStudy(){
+    async verifyViewByDropdownInStudy() {
         try {
             const viewby_dropdown = this.page.locator('//mat-form-field[.//mat-label[normalize-space()="View By"]]//div[contains(@class,"mat-select-trigger")]');
             viewby_dropdown.isVisible;
-          //  console.log("Yes DD :"+viewby_dropdown.isVisible);
-        // Open dropdown
+            //  console.log("Yes DD :"+viewby_dropdown.isVisible);
+            // Open dropdown
             await viewby_dropdown.click({ force: true });
             const panel = this.page.locator('.cdk-overlay-pane');
             await panel.waitFor({ state: 'visible' });
 
-        // Select options
+            // Select options
             await this.page.waitForTimeout(2500);
             const Tissue_dropdown = await panel.locator('mat-option:has-text("Tissue")').innerText();
             const Subject_ID_dropdown = await panel.locator('mat-option:has-text("Subject ID")').innerText();
@@ -861,7 +893,7 @@ export class TechnicianPage{
             const Cassette_opt = await panel.locator('mat-option:has-text("Cassette")').innerText();
             const Sex_opt = await panel.locator('mat-option:has-text("Sex")').innerText();
 
-        // Verify all options are displayed
+            // Verify all options are displayed
             await this.page.waitForTimeout(2500);
             expect(Tissue_dropdown).toBe('Tissue');
             expect(Subject_ID_dropdown).toBe('Subject ID');
@@ -870,14 +902,14 @@ export class TechnicianPage{
             expect(Sex_opt).toBe('Sex');
             await viewby_dropdown.click({ force: true });
         } catch (error) {
-            throw new Error('Failed to verify Dropdown options: '+error);
+            throw new Error('Failed to verify Dropdown options: ' + error);
         }
     }
 
     // Method to verify Select All checkbox is working
-    async verifySelectAllCheckBox(){
+    async verifySelectAllCheckBox() {
         try {
-            if(await this.totalFolderInStudy()){
+            if (await this.totalFolderInStudy()) {
 
             const selectAllText_folder = await this.page.locator('.mat-checkbox-label').first().innerText();
             //this.page.locator('div.selectAllDiv').getByText('Select All');
@@ -987,7 +1019,7 @@ export class TechnicianPage{
             throw new Error("No Data Available:"+error);
         }
         } catch (error) {
-            throw new Error('Failed to verify checkbox: '+error);
+            throw new Error('Failed to verify checkbox: ' + error);
         }
     }
 
