@@ -2,7 +2,7 @@ Feature: Technician
 
     Technician page functionality work as per expectations
 
-@dev
+#@dev
 Scenario:  Verify dashboard UI for Technician role with Study section
 Given user has logged in as Technician
 When user navigate to Technician dashboard
@@ -25,7 +25,7 @@ And user should view study table with columns:
       | Species            |
       | Status             |
 
-@dev
+#@dev
 Scenario:  Verify dashboard UI for Technician role with Image Repository section
 Given user has logged in as Technician
 When user navigate to Technician dashboard
@@ -47,7 +47,7 @@ And user should able to navigate to grid view
 And user should view images in grid format
 And user verify images folder up to last folder in grid format
 
-@dev
+#@dev
 Scenario Outline:  Verify study search on Technician dashboard
 Given user has logged in as Technician
 And user navigate to Technician dashboard
@@ -62,7 +62,6 @@ Examples:
 | Created      |  Dosage            |
 
 #@developed
-@dev
 Scenario: Verify view report popup for Technician role from three dot menu
 Given user has logged in as Technician
 And user navigate to Technician dashboard
@@ -120,8 +119,8 @@ Then user validate slide details table with columns:
       | Dosage      |
 And user validate studyadmin, pathologist, species from details pop up
 
-@runme
-Scenario: Verify study miscellaneous details
+#@developed
+Scenario: Verify study folder level and slide level select all checkbox functionality
 Given user has logged in as Technician
 And user navigate to Technician dashboard
 And user navigate to Study section
@@ -129,5 +128,67 @@ When user navigate inside the study
 Then user verify view by dropdown present inside study
 And user should view select All checkbox is working
 
+#@developed
+Scenario: Verify Dosage and Subject ID filter options are displayed correclty
+Given user has logged in as Technician
+And user navigate to Technician dashboard
+And user navigate to Study section
+When user navigate inside the study
+And user navigate inside folder
+And user noted dosage and subject id for all slides
+And user click the filter
+And user noted all dosage from slides
+And user opens dosage dropdown 
+And user noted all dosages from Dosage dropdown
+And user noted all subject id from slides
+And user click the filter
+And user opens subject id dropdown
+And user noted all subject id from Subject ID dropdown
+Then user validate dropdown dosage values and slide dosage values are matched
+And user validate dropdown subject id values and slide subject id values are matched
+
+#@developed
+Scenario: Verify filter functionality working for Dosage dropdown for multiple checked values
+Given user has logged in as Technician
+And user navigate to Technician dashboard
+And user navigate to Study section
+When user navigate inside the study
+And user navigate inside folder
+And user click the filter
+And user noted all dosage from slides
+And user opens dosage dropdown
+And user noted all dosages from Dosage dropdown
+Then user validate dosage filter is working as per expectations
+
+#@developed
+Scenario: Verify filter functionality working for Subject Id dropdown for multiple checked values
+Given user has logged in as Technician
+And user navigate to Technician dashboard
+And user navigate to Study section
+When user navigate inside the study
+And user navigate inside folder
+And user click the filter
+And user noted all subject id from slides
+And user opens subject id dropdown
+And user noted all subject id from Subject ID dropdown
+Then user validate subject id filter is working as per expectations
+
+#@developed
+Scenario: Verify filter functionality working properly for Dosage and Subject Id
+Given user has logged in as Technician
+And user navigate to Technician dashboard
+And user navigate to Study section
+When user navigate inside the study
+And user navigate inside folder
+And user noted dosage and subject id for all slides
+And user picked any two slides dosage and subject id from slide to be filtered
+And user click the filter
+And user opens dosage dropdown
+And user selects dosages from picked elements
+And user click the filter
+And user opens subject id dropdown
+And user selects subject ids from picked elements
+And user click the filter
+Then user validates slides are displayed as per filter applied
 
 
