@@ -56,7 +56,7 @@ Before(async function (this: CustomWorld) {
   this.page = page;
   this.browser = browser;
   this.applicationAdmin = new ApplicationAdmin(page);
-  this.TechnicianPage = new TechnicianPage(page);
+  this.technicianPage = new TechnicianPage(page);
 });
 
 After(async function (this: CustomWorld, scenario) {

@@ -9,7 +9,7 @@ export class ApplicationAdmin {
     private dataConfigTab;
     private mappingStructureTab;
     private folderLocationTab;
-    private projectToggleButton;
+    public projectToggleButton;
     private accessionToggleButton;
     private peerToggleButton;
     private additionalToggleButton;
@@ -70,14 +70,14 @@ export class ApplicationAdmin {
         await this.fieldConfigTab.click();
     }
 
-    private async toggleButton(button: Locator, toggleName: string): Promise<void> {
+    async toggleButton(button: Locator, toggleName: string): Promise<void> {
     const isChecked = (await button.getAttribute('class'))?.includes('mat-checked');
     await button.click();
     if (isChecked) {
-        await expect(button).not.toHaveClass(/mat-checked/);
+        await expect(button).not.toHaveClass('mat-checked');
         console.log(`${toggleName} toggle is turned OFF`);
     } else {
-        await expect(button).toHaveClass(/mat-checked/);
+        await expect(button).toHaveClass('mat-checked');
         console.log(`${toggleName} toggle is turned ON`);
     }
 }

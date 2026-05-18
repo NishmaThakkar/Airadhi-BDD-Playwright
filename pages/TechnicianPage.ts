@@ -37,8 +37,8 @@ export class TechnicianPage {
             const filePath = `./test-data/${excelFilePath}`;
             const templateSelector = templateName;
             await expect(this.page.locator('#mat-select-value-5')).toBeVisible();
-            await this.page.getByRole('combobox').first().click();
-            await this.page.getByText(templateSelector).click();
+    //        await this.page.getByRole('combobox').first().click();
+    //        await this.page.getByocator(templateSelector).click();
             await this.page.setInputFiles('input[type="file"]', filePath);
             await this.page.getByRole('button', { name: 'Create' }).click();
         } catch (error) {

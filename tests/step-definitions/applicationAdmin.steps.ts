@@ -1,5 +1,9 @@
 import { Given, When, Then} from '@cucumber/cucumber';
 import { CustomWorld  } from '../../tests/fixtures/world';
+import { expect, Locator } from '@playwright/test';
+
+
+let project: any;
 
 Given('Application admin should be selected', async function (this: CustomWorld) {
    await this.applicationAdmin.selectApplicationAdmin();
@@ -26,16 +30,30 @@ Then('Admin should see success message', async function (this: CustomWorld) {
     await this.applicationAdmin.verifySuccessMessage();
 });
 
+async function toggleState(adminToggle: Locator, technicianToggle: Locator,  technicianPage: any): Promise<string> {
+   const isChecked = (await adminToggle.getAttribute('class'))?.includes('mat-checked');
+
+    await technicianPage.selectTechnicianRole();
+    await technicianPage.displayCreateStudyIcon();
+    await technicianPage.verifyCreateStudyButton();
+    await technicianPage.navigateToCreateStudyPage('1AnimalID6organs.csv','LungTest');
+
+       if (isChecked) {
+          //  await page.waitForTimeout(5000);
+            await expect(technicianToggle).toBeVisible();
+            return 'ON';
+       } else {
+        console.log('Project toggle is OFF');
+           await expect(technicianToggle).not.toBeVisible();
+           return 'OFF';
+       }
+}
+
 When('Admin verifies the state of the toggles', async function (this: CustomWorld) {
-        await this.page.waitForTimeout(3000);
-         if ((await this.page.locator("//mat-label[contains(text(),'Project No.')]/following-sibling::mat-slide-toggle").getAttribute('class'))?.includes('mat-checked')) {  
-              await this.TechnicianPage.selectTechnicianRole();
-              await this.page.waitForTimeout(2000);
-              console.log('Project toggle is ON');
-                  await this.TechnicianPage.displayCreateStudyIcon();
-        }
-        else
-        {     
-           console.log('Project toggle is OFF');
-        }     
+    await this.page.waitForTimeout(5000);
+    const technicianProject = this.page.locator("xpath=//*[contains(@id,'mat-form-field-label') and normalize-space()='Project No.']");             
+
+    const projectToggleState = await toggleState(this.applicationAdmin.projectToggleButton, technicianProject, this.technicianPage);
+    console.log(`Project toggle is ${projectToggleState}`);
+    
 });
