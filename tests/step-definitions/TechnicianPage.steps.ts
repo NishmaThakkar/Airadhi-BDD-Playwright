@@ -217,3 +217,83 @@ Then('user verify view by dropdown present inside study', async function(){
 Then('user should view select All checkbox is working', async function(){
      await this.technicianPage.verifySelectAllCheckBox();
 });
+
+When('user navigate inside folder', async function(){
+     await this.technicianPage.navigateInsideFolder();
+});
+
+When('user noted all dosage from slides', async function(){
+     await this.technicianPage.noteAllDosagesFromSlides();    
+});
+
+When('user noted dosage and subject id for all slides',async function(){
+     await this.technicianPage.noteDosageAndSubjectIDForAllSlides();
+})
+
+When('user click the filter', async function(){
+     await this.technicianPage.clickFilterIcon();
+});
+
+When('user noted all dosages from Dosage dropdown', async function(){
+     await this.technicianPage.noteAllDosagesFromDosageDropdown();
+});
+
+When('user noted all subject id from slides', async function(){
+     await this.technicianPage.noteAllSubjectIDFromSlides();
+});
+
+When('user opens dosage dropdown', async function(){
+     await this.technicianPage.openDosageDropdown();
+});
+
+When('user opens subject id dropdown', async function(){
+     await this.technicianPage.openSubjectIDDropdown();
+});
+
+When('user noted all subject id from Subject ID dropdown', async function(){
+     await this.technicianPage.noteAllSubjectIDFromSubjectIDDropdown();
+});
+
+When('user click filter icon to close subject id dropdown', async function(){
+     await this.technicianPage.clickFilterIcon();
+});
+
+Then('user validate dropdown dosage values and slide dosage values are matched', async function(){
+     await this.technicianPage.verifyDosageValuesMatched();
+});
+
+Then('user validate dropdown subject id values and slide subject id values are matched', async function(){
+     await this.technicianPage.verifySubjectIDValuesMatched();
+});
+
+Then('user validate dosage filter is working as per expectations', async function(){
+     await this.technicianPage.verifyDosageFilterFunctionality();
+});
+
+Then('user validate subject id filter is working as per expectations', async function(){
+     await this.technicianPage.verifySubjectIDFilterFunctionality();
+});
+
+Then('user open subject id dropdown', async function(){
+     await this.technicianPage.openSubjectIDDropdown();
+});
+
+When ('user selects subject id from subject id dropdown', async function(){
+     await this.technicianPage.selectSubjectIdFromDropdown();
+});
+
+When ('user picked any two slides dosage and subject id from slide to be filtered', async function(){
+     await this.technicianPage.pickAnyTwoslidesDosage_SubjectID();
+});
+
+When ('user selects dosages from picked elements', async function(){
+     await this.technicianPage.selectDosageFromPickedElements();
+});
+
+When ('user selects subject ids from picked elements', async function(){
+     await this.technicianPage.selectSubjectIdFromPickedElements();
+});
+
+Then ('user validates slides are displayed as per filter applied', async function(){
+     await this.technicianPage.validateDosageAndSubjectIDFilter();
+});
