@@ -10,7 +10,7 @@ retries:0,
 
   use: {
 
-     baseURL: 'https://airadhi-merck-uat.airamatrix.in/AIRADHI/login',
+     baseURL: 'http://airadhi-qc-internal.airamatrix.in/',
     trace: 'on-first-retry',
   },
 

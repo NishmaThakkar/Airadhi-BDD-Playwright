@@ -9,7 +9,7 @@ Given('User launches the application', async function (this: CustomWorld) {
 });
 
 Given('User enters valid credentials and is logged in sucessfully', async function (this: CustomWorld) {
-  await this.loginPage.login("nishma.thakkar@airamatrix.com", "Password@1");
+  await this.loginPage.login("edward.miller@airamatrix.com", "Password@2");
 });
 
 Given('User navigates to technician role', async function (this: CustomWorld) {

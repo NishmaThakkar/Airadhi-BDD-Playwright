@@ -9,7 +9,7 @@ export class TechnicianPage {
     //  private study_number: string = '';
 
     async loginTechnician() {
-        await this.page.goto('https://airadhi-merck-uat.airamatrix.in/AIRADHI/login');
+        await this.page.goto('http://airadhi-qc-internal.airamatrix.in/');
         await this.page.getByRole('textbox', { name: 'Email ID' }).fill("nishma.thakkar@airamatrix.com");
         await this.page.getByRole('textbox', { name: 'Password' }).fill("Password@1");
         await this.page.waitForTimeout(10000);
@@ -440,7 +440,7 @@ export class TechnicianPage {
     } catch (error) {
         throw new Error('Failed to verify study is displayed with that study number: ' + error);
     }
-
+    }
     // Method to verify study status is displayed on table with that study status on Technician dashboard
     async verifyStudyStatusDisplayed(study_status: string, study_number: string) {
         try {
