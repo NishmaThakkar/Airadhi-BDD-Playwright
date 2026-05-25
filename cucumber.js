@@ -8,6 +8,7 @@ module.exports = {
     paths: ["tests/features/**/*.feature"],
     requireModule: ["ts-node/register"],
     format: [
+      "pretty",
       "progress",              
       "allure-cucumberjs/reporter"
     ],

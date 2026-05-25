@@ -1,4 +1,4 @@
-import { Before, After } from '@cucumber/cucumber';
+import { Before, After} from '@cucumber/cucumber';
 import { chromium ,firefox,webkit} from '@playwright/test';
 import { CustomWorld } from '../../tests/fixtures/world';
 import { ApplicationAdmin } from '../../pages/ApplicationAdmin';
@@ -16,7 +16,21 @@ setDefaultTimeout(60 * 1000); // 60 seconds
 //   this.page = await this.context.newPage();
 // });
 
+  const consoleErrors: string[] = [];
+/*BeforeStep(async function (this: CustomWorld) {
+        this.page.on('console', msg => {
+        if (msg.type() === 'error') {
+            consoleErrors.push(msg.text());
+           console.log('Console Error:', msg.text());
+    }});
+});
 
+AfterStep(async function (this: CustomWorld) {
+  await this.page.waitForTimeout(2000);
+  expect(consoleErrors,`Console errors found: ${consoleErrors.join('\n')}`).toEqual([]);
+});
+
+*/
 
 Before(async function (this: CustomWorld) {
 
@@ -57,14 +71,21 @@ Before(async function (this: CustomWorld) {
   this.browser = browser;
   this.applicationAdmin = new ApplicationAdmin(page);
   this.technicianPage = new TechnicianPage(page);
+
+  /* this.page.on('console', msg => {
+        if (msg.type() === 'error') {
+            consoleErrors.push(msg.text());
+           console.log('Console Error:', msg.text());
+    }});*/
 });
 
 After(async function (this: CustomWorld, scenario) {
+//  await this.page.waitForTimeout(2000);
+//  expect(consoleErrors,`Console errors found: ${consoleErrors.join('\n')}`).toEqual([]);
 
   const status = scenario.result?.status;
-
   console.log('Scenario Status:', status);
-
+  
   if (status !== 'PASSED') {
     const screenshot = await this.page.screenshot({ fullPage: true });
     await this.attach(screenshot, 'image/png');

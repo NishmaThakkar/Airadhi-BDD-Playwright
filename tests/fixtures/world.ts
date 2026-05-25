@@ -12,9 +12,7 @@ export class CustomWorld extends World {
   applicationAdmin!: ApplicationAdmin;
   technicianPage!: TechnicianPage;
   expect = expect;
- 
-
-
+  userDeactivated?: boolean;
 }
 
 setWorldConstructor(CustomWorld);
