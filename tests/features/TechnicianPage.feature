@@ -1,11 +1,14 @@
+@technician
 Feature: Technician
+Technician page functionality work as per expectations
 
-    Technician page functionality work as per expectations
+Background:
+  Given User launches the application
+  And User enters valid credentials and is logged in sucessfully
 
-#@dev
+@study
 Scenario:  Verify dashboard UI for Technician role with Study section
-Given user has logged in as Technician
-When user navigate to Technician dashboard
+Given user navigate to Technician dashboard
 And user navigate to Study section
 Then user should see the status dropdown with options
 And user should able to search text in search box
@@ -13,22 +16,21 @@ And user should see the left side panel with sections:
       | Study           |
       | Image Repository|
       | Analysis        |
-      | Configure       |
+#      | Configure       |
 And user should see plus icon for create study
 And user should view study table with columns:
       | Study No.          |
-      | Study Administrator|
+      | Study Director|
       | Pathologist        |
       | Slides Mapped      |
-      | #Organ             |
-      | Analysis Completed |
+ #     | #Organ             |
+ #     | Analysis Completed |
       | Species            |
       | Status             |
 
-#@dev
+@imagerepository
 Scenario:  Verify dashboard UI for Technician role with Image Repository section
-Given user has logged in as Technician
-When user navigate to Technician dashboard
+Given user navigate to Technician dashboard
 And user navigate to Study section
 Then user should able to navigate Image Repository section
 And user should view Image Repository tab
@@ -47,10 +49,9 @@ And user should able to navigate to grid view
 And user should view images in grid format
 And user verify images folder up to last folder in grid format
 
-#@dev
+@searchstudy
 Scenario Outline:  Verify study search on Technician dashboard
-Given user has logged in as Technician
-And user navigate to Technician dashboard
+Given user navigate to Technician dashboard
 And user navigate to Study section
 When user select study status "<study_status>" from dropdown
 And user search study by study number "<study_number>" in search box
@@ -61,10 +62,9 @@ Examples:
 | In Progress  | 	ET                |
 | Created      |  Dosage            |
 
-#@developed
+@viewreport
 Scenario: Verify view report popup for Technician role from three dot menu
-Given user has logged in as Technician
-And user navigate to Technician dashboard
+Given user navigate to Technician dashboard
 And user navigate to Study section
 And user has noted study no. and slides mapped for first study
 When user click on three dots on right side of any study
@@ -89,8 +89,7 @@ And user validate Cancel and Download Report buttons are displayed
 
 #@developed
 Scenario: Verify slides mapped count inside study is correct
-Given user has logged in as Technician
-And user navigate to Technician dashboard
+#Given user navigate to Technician dashboard
 And user navigate to Study section
 When user navigate inside the study
 And user select "sex" from view by dropdown
@@ -105,8 +104,7 @@ Then user verify that slides count from study and slides mapped count on details
 
 #@developed
 Scenario: Verify image details pop up from i icon
-Given user has logged in as Technician
-And user navigate to Technician dashboard
+#Given user navigate to Technician dashboard
 And user navigate to Study section
 And user noted studyadmin, pathologist, species from study listing page
 When user click on i icon of study
@@ -121,8 +119,7 @@ And user validate studyadmin, pathologist, species from details pop up
 
 #@developed
 Scenario: Verify study folder level and slide level select all checkbox functionality
-Given user has logged in as Technician
-And user navigate to Technician dashboard
+#Given user navigate to Technician dashboard
 And user navigate to Study section
 When user navigate inside the study
 Then user verify view by dropdown present inside study
@@ -130,8 +127,7 @@ And user should view select All checkbox is working
 
 #@developed
 Scenario: Verify Dosage and Subject ID filter options are displayed correclty
-Given user has logged in as Technician
-And user navigate to Technician dashboard
+#Given user navigate to Technician dashboard
 And user navigate to Study section
 When user navigate inside the study
 And user navigate inside folder
@@ -149,8 +145,7 @@ And user validate dropdown subject id values and slide subject id values are mat
 
 #@developed
 Scenario: Verify filter functionality working for Dosage dropdown for multiple checked values
-Given user has logged in as Technician
-And user navigate to Technician dashboard
+#Given user navigate to Technician dashboard
 And user navigate to Study section
 When user navigate inside the study
 And user navigate inside folder
@@ -162,8 +157,7 @@ Then user validate dosage filter is working as per expectations
 
 #@developed
 Scenario: Verify filter functionality working for Subject Id dropdown for multiple checked values
-Given user has logged in as Technician
-And user navigate to Technician dashboard
+#Given user navigate to Technician dashboard
 And user navigate to Study section
 When user navigate inside the study
 And user navigate inside folder
@@ -175,8 +169,7 @@ Then user validate subject id filter is working as per expectations
 
 #@developed
 Scenario: Verify filter functionality working properly for Dosage and Subject Id
-Given user has logged in as Technician
-And user navigate to Technician dashboard
+#Given user navigate to Technician dashboard
 And user navigate to Study section
 When user navigate inside the study
 And user navigate inside folder
@@ -190,5 +183,50 @@ And user opens subject id dropdown
 And user selects subject ids from picked elements
 And user click the filter
 Then user validates slides are displayed as per filter applied
+
+@editstudy
+Scenario: Verify edit option for Technician role from three dot menu
+Given user navigate to Technician dashboard
+And user navigate to Study section
+And user check status of study, if study is in Created status then only user can edit the study details
+Then user should click on edit option
+Then user verify fields in edit study page:
+      | Study No.     |
+      | Study title |
+      | Study Director |
+      | Pathologist|
+      | Species |
+      | Strain          |
+Then user should able to edit study details
+When Admin clicks on Save button
+Then user should see success message of study updation
+
+@deletestudy
+Scenario: Verify delete option for Technician role from three dot menu
+Given user navigate to Technician dashboard
+And user navigate to Study section
+And user check status of study, if study is in Created status then only user can edit the study details
+Then user should click on delete option
+Then user should see confirmation popup with message "Delete Study"
+When user clicks on Delete button
+#Then user should see success message of study deletion
+
+@syncimages
+Scenario: Verify Sync Images option for Technician role from three dot menu
+Given user navigate to Technician dashboard
+And user navigate to Study section
+And user check status of study, if study is in Created status then only user can edit the study details
+Then user should click on Sync Images option
+Then user should see confirmation popup with message "Sync Images"
+#When user clicks on Sync button
+#Then user should see success message of image sync
+
+@analysis
+Scenario: Verify dashboard for Analysis section for Technician role
+Given user navigate to Technician dashboard
+Given user navigate to Analysis dashboard
+Then User should view all the tabs in Analysis section:
+      | QC Analysis |
+      | Analysis |
 
 

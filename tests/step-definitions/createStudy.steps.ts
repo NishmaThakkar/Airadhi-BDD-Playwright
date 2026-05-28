@@ -9,7 +9,16 @@ Given('User launches the application', async function (this: CustomWorld) {
 });
 
 Given('User enters valid credentials and is logged in sucessfully', async function (this: CustomWorld) {
+  const logoutButton = this.page.getByRole('button', { name: 'Logout' });
+  const isLoggedIn = await logoutButton.isVisible({ timeout: 2000 }).catch(() => false);
+
+  if (isLoggedIn) {
+   // console.log('Reusing existing authenticated Playwright session.');
+    return;
+  }
+
   await this.loginPage.login("edward.miller@airamatrix.com", "Password@2");
+  await this.loginPage.verifyLogin();
 });
 
 Given('User navigates to technician role', async function (this: CustomWorld) {

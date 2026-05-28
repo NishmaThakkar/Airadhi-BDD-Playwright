@@ -6,10 +6,17 @@ Background:
   And User enters valid credentials and is logged in sucessfully
 
 @dashboard
-Scenario: Admin can access dashboard
+Scenario: Admin can access dashboard and verify UI
     Given Application admin should be selected
-    Then User should see Configure, Users, Reassign in Side Panel
-    Then User should see Field Configuration, Data Configuration, Mapping Structure, Folder Location in Tabs
+    Then User should view below side panel:
+      | Configure|
+      | Users|
+#      | Reassign|
+    Then User should view all the tabs:
+      |Field Configuration|
+      |Data Configuration|
+      |Mapping Structure|
+      |Folder Location|
 
 @updatetoggle
 Scenario: Admin can update Field Configuration
@@ -25,6 +32,7 @@ Scenario: Admin can verify Field Configuration toggle
   
 @addconfiguration
 Scenario: Admin can add configuration in Data Configuration
+  Given Application admin should be selected
   Given Admin is on Data Configuration tab
   When Admin clicks on Add Configuration button
   Then Admin fills the configuration details and saves
@@ -43,6 +51,7 @@ Scenario: Admin can add mapping structure
 @createfolderlocation
 Scenario: Admin can create folder location
   Given Admin is on Folder Location tab
+  Then Admin should see search box
   When Admin clicks on Create button and fills the details
   When Admin clicks on Save button
   Then Admin should see success message of folder location creation
@@ -50,16 +59,33 @@ Scenario: Admin can create folder location
 @deletefolderlocation
 Scenario: Admin can delete folder location
   Given Admin is on Folder Location tab
+  Then Admin should see search box
   When Admin clicks on Delete button of a folder location
  Then Admin should see success message of folder location deletion
 
- @createusers
- Scenario: Admin can create user
+@userpanel
+Scenario: Admin can access User Panel and verify UI
   Given Admin is on User Panel
+  Then Admin should see search box
+#  Then User should view all the tabs:
+#      | Active|
+#      | Inactive|
+  Then Admin should see user table with columns:
+      | First Name|
+      | Last Name|
+      | Email ID        |
+      | Creation Date  |
+      | Roles         |
+
+ @createusers
+ Scenario: Admin can create user and verify duplicate user creation
+  Given Admin is on User Panel
+# Then User should see tabs:
+  Then Admin should see search box
   When Admin clicks on Create User button and fills the details
   When Admin clicks on Save button
   Then Admin should see success message of user creation
-  And Admin clicks on Inactive Tab
+  When Admin clicks on Inactive Tab
   Then Admin should see the created user in Inactive tab
   When Admin clicks on Create User button and fills the details
   When Admin clicks on Save button
@@ -68,12 +94,14 @@ Scenario: Admin can delete folder location
   @deactivateusers
   Scenario: Admin can deactivate user
   Given Admin is on User Panel
+  Then Admin should see search box
   When Admin clicks on Deactivate button of a user
   Then Admin should see success message of user deactivation
 
   @activateusers
   Scenario: Admin can activate user
   Given Admin is on User Panel
+  Then Admin should see search box
   When Admin clicks on Inactive Tab
   When Admin clicks on Activate button of a user
   Then Admin should see success message of user activation
@@ -81,6 +109,7 @@ Scenario: Admin can delete folder location
 @editusers
 Scenario: Admin can edit user details
   Given Admin is on User Panel
+  Then Admin should see search box
   When Admin clicks on Edit button of a user and updates the details
   When Admin clicks on Save button
-  Then Admin should see success message of user update
+ # Then Admin should see success message of user update

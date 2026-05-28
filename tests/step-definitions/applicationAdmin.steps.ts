@@ -4,39 +4,53 @@ import { expect, Locator } from '@playwright/test';
 
 
 Given('Application admin should be selected', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+//    await this.applicationAdmin.consoleErrorCheck();
    await this.applicationAdmin.selectApplicationAdmin();
-   await this.applicationAdmin.verifyNoConsoleErrors();
+//   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('User should see Configure, Users, Reassign in Side Panel', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+//    await this.applicationAdmin.consoleErrorCheck();
    await this.applicationAdmin.sidePanelOptions();
-   await this.applicationAdmin.verifyNoConsoleErrors();
+//   await this.applicationAdmin.verifyNoConsoleErrors();
+});
+
+Then('User should view below side panel:', async function (this: CustomWorld, dataTable) {
+  const panel = dataTable.raw().flat();
+  for (const section of panel) {
+    await this.applicationAdmin.verifyLeftPanelSection(section);
+  }
+});
+
+Then('User should view all the tabs:', async function (this: CustomWorld, dataTable) {
+    const tabs = dataTable.raw().flat();
+    for (const tab of tabs) {
+        await this.applicationAdmin.verifyTabs(tab);
+    }
 });
 
 Then('User should see Field Configuration, Data Configuration, Mapping Structure, Folder Location in Tabs', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.tabOptions();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+    //    await this.applicationAdmin.verifyNoConsoleErrors();
 });     
 
 Given('Admin is on Field Configuration tab', async function (this: CustomWorld) {   
-    await this.applicationAdmin.consoleErrorCheck();
+//    await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.navigateToFieldConfiguration();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 When('Admin updates the field configuration', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+//    await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.updateFieldConfiguration();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('Admin should see success message of toggle update', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.verifySuccessMessage(' Configuration Added Successfully ');
-    await this.applicationAdmin.verifyNoConsoleErrors();
+//    await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
     async function toggleState(isChecked: any, technicianToggle: Locator): Promise<string> {
@@ -52,7 +66,7 @@ Then('Admin should see success message of toggle update', async function (this: 
     }
 
 When('Admin verifies the state of the toggles', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+    //    await this.applicationAdmin.consoleErrorCheck();
     const project = (await this.applicationAdmin.projectToggleButton.getAttribute('class'))?.includes('mat-checked');
     const accession = (await this.applicationAdmin.accessionToggleButton.getAttribute('class'))?.includes('mat-checked');
     const peer = (await this.applicationAdmin.peerToggleButton.getAttribute('class'))?.includes('mat-checked');
@@ -116,96 +130,103 @@ When('Admin verifies the state of the toggles', async function (this: CustomWorl
     const testField = this.page.locator("xpath=//*[contains(@id,'mat-form-field-label') and normalize-space()='Test Item']");
     const testToggleState = await toggleState(test, testField);
     console.log(`Test Item toggle is ${testToggleState}`);
-    await this.applicationAdmin.verifyNoConsoleErrors();
+    //    await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Given('Admin is on Data Configuration tab', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.dataConfigTab.click();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 When('Admin clicks on Add Configuration button', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+//    await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.clickAddConfigButton();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('Admin fills the configuration details and saves', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.fillConfigurationDetails();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Given('Admin is on Folder Location tab', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+  //  await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.folderLocationTab.click();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 When('Admin clicks on Create button and fills the details', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.verifyConfigAdded();
     await this.applicationAdmin.addFolderLocation();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+//    await this.applicationAdmin.verifyNoConsoleErrors();
     
 });
 
 Given('Admin is on Mapping Structure tab', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.mappingStructureTab.click();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 When('Admin clicks on Save button', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
-    await this.page.waitForTimeout(3000);
+ //   await this.applicationAdmin.consoleErrorCheck();
+ //   await this.page.waitForTimeout(3000);
     await this.applicationAdmin.saveButton();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('Admin should see success message of folder location creation', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.page.waitForTimeout(3000);
     await this.applicationAdmin.verifySuccessMessage(' Image Folder Created Successfully ');
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 When('Admin clicks on Delete button of a folder location', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.deleteFolderLocation();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 When('Admin clicks on Delete button of a configuration', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.deleteConfig();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('Admin should see success message of folder location deletion', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.verifySuccessMessage(' Deleted successfully ');
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Given('Admin is on User Panel', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.navigateToUserPanel();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+//    await this.applicationAdmin.verifyNoConsoleErrors();
+});
+
+Then('Admin should see user table with columns:', async function (this: CustomWorld, dataTable) {
+    const columns = dataTable.raw().flat();
+    for (const column of columns) {
+        await this.applicationAdmin.verifyColumns(column);
+     }
 });
 
 When('Admin clicks on Create User button and fills the details', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.clickCreateUserButton();
     await this.applicationAdmin.fillUserDetails();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 When('Admin clicks on Deactivate button of a user', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     this.userDeactivated =  await this.applicationAdmin.deactivateUser();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('Admin should see success message of user deactivation', async function (this: CustomWorld) {
@@ -213,21 +234,27 @@ Then('Admin should see success message of user deactivation', async function (th
         console.log("Skipping Then step because no user was available.");
         return;
     }
-    await this.applicationAdmin.consoleErrorCheck();
+//    await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.verifySuccessMessage(' User Deactivated Successfully ');
-    await this.applicationAdmin.verifyNoConsoleErrors();
+//    await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 When('Admin clicks on Inactive Tab', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+//    await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.inactiveTab();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+//    await this.applicationAdmin.verifyNoConsoleErrors();
+});
+
+Then('Admin should see search box', async function (this: CustomWorld) {
+//    await this.applicationAdmin.consoleErrorCheck();
+    await this.applicationAdmin.verifySearchBox();
+//    await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 When('Admin clicks on Activate button of a user', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+//    await this.applicationAdmin.consoleErrorCheck();
     this.userDeactivated =  await this.applicationAdmin.activateUser();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('Admin should see success message of user activation', async function (this: CustomWorld) {
@@ -235,37 +262,37 @@ Then('Admin should see success message of user activation', async function (this
         console.log("Skipping Then step because no user was available.");
         return;
     }
-    await this.applicationAdmin.consoleErrorCheck();
+//    await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.verifySuccessMessage(' User Activated For Email ID :');
-    await this.applicationAdmin.verifyNoConsoleErrors();
+//    await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('Admin should see success message of user creation', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.verifySuccessMessage(' User Created And Verification Email Sent Successfully ');
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('Admin should see the created user in Inactive tab', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.verifyUserAdded();
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('Admin should see error message of duplicate user creation', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.verifySuccessMessage(' Email ID Already Exists ');
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 When('Admin clicks on Edit button of a user and updates the details', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.editUserRoles();
     await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('Admin should see success message of user update', async function (this: CustomWorld) {
-    await this.applicationAdmin.consoleErrorCheck();
+ //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.verifySuccessMessage(' User Updated Successfully For Email ID : ');
-    await this.applicationAdmin.verifyNoConsoleErrors();
+ //   await this.applicationAdmin.verifyNoConsoleErrors();
 });

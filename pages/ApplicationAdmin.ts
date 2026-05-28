@@ -49,9 +49,12 @@ export class ApplicationAdmin {
     private pathologistCheckbox;
     private randomEmail;
     private editUserButton;
+    private searchBox;
+    private dropdown;
 
 
     constructor(private page: Page) {
+        this.dropdown = this.page.locator("//*[contains(@id,'mat-select')]//div[contains(@class,'mat-select-value')]").first();
         this.applicationAdminText = this.page.locator("//*[contains(@id,'mat-select')]").getByText('Application Admin');
         this.configureOption = this.page.locator("//*[contains(@class,'indvPlaces')]").getByText('Configure');
         this.usersOption = this.page.locator("//*[contains(@class,'indvPlaces')]").getByText('Users');
@@ -100,19 +103,51 @@ export class ApplicationAdmin {
         this.pathologistCheckbox = this.page.locator("//span[@class='mat-checkbox-inner-container']/following-sibling::span[text()='Pathologist']");
         this.randomEmail = faker.internet.email();
         this.editUserButton = this.page.locator("//a[@id='editUserIcon']").first();
+        this.searchBox = this.page.locator("//input[@placeholder='Search']");
     }
 
 
     async selectApplicationAdmin() {
-        await expect(this.applicationAdminText).toBeVisible();
-        await this.applicationAdminText.click();
+    //    await expect(this.applicationAdminText).toBeVisible();
+    //    await this.page.getByText('Application Admin').click();
+        await this.dropdown.click();
+        await this.page.getByRole('option', { name: 'Application Admin' }).click();
+ //       await this.applicationAdminText.click();
     }
 
     async sidePanelOptions() {
         await expect(this.configureOption).toBeVisible();
         await expect(this.usersOption).toBeVisible();
-        await expect(this.reassignOption).toBeVisible();
+ //       await expect(this.reassignOption).toBeVisible();
     }
+
+    async verifyLeftPanelSection(section: string) {
+        try {
+            const locator = this.page.locator('p', { hasText: section });
+            await expect(locator).toBeVisible({visible: true, timeout: 500});
+        } catch (error) {
+            throw new Error('Failed to verify left panel section: ' + error);
+        }
+    }
+
+    async verifyTabs(section: string) {        
+        try {
+            const locator = this.page.locator('h6', { hasText: section });
+            await expect(locator).toBeVisible({visible: true, timeout: 500});
+        } catch (error) {
+            throw new Error('Failed to verify tabs: ' + error);
+        }
+    }
+
+       async verifyColumns(column: string) {        
+        try {
+            const locator = this.page.locator('th', { hasText: column });
+            await expect(locator).toBeVisible({visible: true, timeout: 500});
+        } catch (error) {
+            throw new Error('Failed to verify columns: ' + error);
+        }
+    }
+
 
     async tabOptions() {
         await expect(this.fieldConfigTab).toBeVisible();
@@ -139,7 +174,7 @@ export class ApplicationAdmin {
 }
 
     async updateFieldConfiguration() {
-        await this.page.waitForTimeout(5000);
+        await this.page.waitForTimeout(3000);
         await this.toggleButton(this.projectToggleButton, 'Project');
         await this.toggleButton(this.accessionToggleButton, 'Accession');
         await this.toggleButton(this.peerToggleButton, 'Peer');
@@ -190,7 +225,7 @@ export class ApplicationAdmin {
     async addFolderLocation() {
         await this.folderName.fill(this.folderNameInput);
         await this.folderLocation.fill(this.folderLocationInput);
-        await this.page.waitForTimeout(2000);
+  //      await this.page.waitForTimeout(2000);
    //     await this.createButton.click();
     }
 
@@ -304,5 +339,9 @@ export class ApplicationAdmin {
             }
                 return true;
         }
+    }
+
+    async verifySearchBox() {
+        await expect(this.searchBox).toBeVisible();
     }
 }

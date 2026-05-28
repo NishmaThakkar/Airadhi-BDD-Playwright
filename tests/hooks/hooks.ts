@@ -1,5 +1,5 @@
-import { Before, After} from '@cucumber/cucumber';
-import { chromium ,firefox,webkit} from '@playwright/test';
+import { Before, After, BeforeAll, AfterAll,BeforeStep,AfterStep } from '@cucumber/cucumber';
+import { chromium, firefox, webkit, Browser, BrowserContext, Page,expect } from '@playwright/test';
 import { CustomWorld } from '../../tests/fixtures/world';
 import { ApplicationAdmin } from '../../pages/ApplicationAdmin';
 import { TechnicianPage } from '../../pages/TechnicianPage';
@@ -8,34 +8,13 @@ import { pwConfig } from '../../tests/config/playwrightConfig';
 
 setDefaultTimeout(60 * 1000); // 60 seconds
 
+let sharedBrowser: Browser | undefined;
+let sharedContext: BrowserContext | undefined;
+let sharedPage: Page | undefined;
+let consoleErrors: string[] = [];
 
-// Before(async function (this: CustomWorld) {
-//   this.browser = await chromium.launch({ headless: false,args: ['--start-maximized'] });
-//     this.context = await this.browser.newContext({
-//     viewport: null});
-//   this.page = await this.context.newPage();
-// });
-
-  const consoleErrors: string[] = [];
-/*BeforeStep(async function (this: CustomWorld) {
-        this.page.on('console', msg => {
-        if (msg.type() === 'error') {
-            consoleErrors.push(msg.text());
-           console.log('Console Error:', msg.text());
-    }});
-});
-
-AfterStep(async function (this: CustomWorld) {
-  await this.page.waitForTimeout(2000);
-  expect(consoleErrors,`Console errors found: ${consoleErrors.join('\n')}`).toEqual([]);
-});
-
-*/
-
-Before(async function (this: CustomWorld) {
-
+BeforeAll(async function () {
   const browserName = process.env.BROWSER || 'chromium';
-
   const project = pwConfig.projects?.find(p => p.name === browserName);
 
   if (!project) {
@@ -58,39 +37,70 @@ Before(async function (this: CustomWorld) {
       throw new Error('Invalid browser');
   }
 
-  const browser = await browserType.launch({
+  sharedBrowser = await browserType.launch({
     headless: false,
   });
 
-  const context = await browser.newContext({
+  sharedContext = await sharedBrowser.newContext({
     ...project.use,
   });
 
-  const page = await context.newPage();
-  this.page = page;
-  this.browser = browser;
-  this.applicationAdmin = new ApplicationAdmin(page);
-  this.technicianPage = new TechnicianPage(page);
+  sharedPage = await sharedContext.newPage();
 
-  /* this.page.on('console', msg => {
-        if (msg.type() === 'error') {
-            consoleErrors.push(msg.text());
-           console.log('Console Error:', msg.text());
-    }});*/
+  // Capture console errors once for the shared page
 });
 
+Before(async function (this: CustomWorld) {
+  if (!sharedBrowser || !sharedContext || !sharedPage) {
+    throw new Error('Shared browser session was not initialized');
+  }
+  // Use the shared context/page created in BeforeAll to capture console errors
+  this.context = sharedContext;
+  this.page = sharedPage;
+  this.browser = sharedBrowser;
+  this.applicationAdmin = new ApplicationAdmin(this.page);
+  this.technicianPage = new TechnicianPage(this.page);
+  // reset console errors for the upcoming scenario
+
+  await this.page.goto(pwConfig.use?.baseURL || '', { waitUntil: 'domcontentloaded' });
+
+});
+
+BeforeStep(async function (this: CustomWorld) {
+  // Clear console errors before each step
+  consoleErrors = [];
+   this.page.on('console', msg => {
+    if (msg.type() === 'error') {
+      consoleErrors.push(msg.text());
+    }
+   });
+});
+
+
 After(async function (this: CustomWorld, scenario) {
-//  await this.page.waitForTimeout(2000);
-//  expect(consoleErrors,`Console errors found: ${consoleErrors.join('\n')}`).toEqual([]);
 
   const status = scenario.result?.status;
-  console.log('Scenario Status:', status);
-  
+  const scenarioName = scenario.pickle.name;
+  console.log(`Scenario completed: ${scenarioName} | Status: ${status}`);
+
   if (status !== 'PASSED') {
+  //  console.log(consoleErrors);
     const screenshot = await this.page.screenshot({ fullPage: true });
     await this.attach(screenshot, 'image/png');
   } else {
     await this.attach('Scenario passed', 'text/plain');
   }
-  await this.browser?.close();
+
+});
+
+AfterStep(async function (this: CustomWorld) {
+  await this.page.waitForTimeout(2000);
+  expect(consoleErrors,`Console errors found: ${consoleErrors.join('\n')}`).toEqual([]);
+  
+});
+
+AfterAll(async function () {
+  
+  await sharedContext?.close();
+  await sharedBrowser?.close();
 });

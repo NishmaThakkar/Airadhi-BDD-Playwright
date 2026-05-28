@@ -1,12 +1,30 @@
 import { Page, expect } from '@playwright/test';
 import { error } from 'console';
-import { exitCode } from 'process';
+
 
 
 export class TechnicianPage {
-    constructor(private page: Page) { }
+
+    private folder;
+    private studyField;
+    private listbox;
+    private analysis;
+    private deleteButton;
+    private threeDotsButton;
+    private study_number: string = '';
+
+    constructor(private page: Page) {
+
+        this.folder = this.page.locator("//mat-icon[@svgicon='folderSvgIcon']");
+        this.studyField = this.page.locator('mat-label');
+        this.listbox = this.page.locator("//div[@role='listbox']//mat-option");
+        this.analysis = this.page.getByText('Analysis');
+        this.deleteButton = this.page.locator("//button[text()='Delete']");
+        this.threeDotsButton = this.page.locator('tr.expandable-element-row').first().locator('.mat-menu-trigger');
+     }
     private repo_name: string = '';
     //  private study_number: string = '';
+
 
     async loginTechnician() {
         await this.page.goto('http://airadhi-qc-internal.airamatrix.in/');
@@ -368,9 +386,12 @@ export class TechnicianPage {
 
     // Method to navigate back to image repository from image details
     async navigateToImgRepoBack() {
+
         try {
-            await this.page.locator('div.repoFolderSelection span.selectionFolderNames', { hasText: this.repo_name }).click();
-            await this.page.waitForTimeout(2000);
+            if(await this.folder.isVisible()) {
+                await this.page.locator('div.repoFolderSelection span.selectionFolderNames', { hasText: this.repo_name }).click();
+                await this.page.waitForTimeout(2000);
+            }
         } catch (error) {
             throw new Error('Failed to navigate back to image repository: ' + error);
         }
@@ -460,8 +481,32 @@ export class TechnicianPage {
 
     }
 
-    // Method to note study number and slides mapped for first study in the list
-    private study_number: string = '';
+    async verifyStatus(){
+        await this.page.waitForFunction(() => {
+        const table = document.querySelector('table');
+        if (!table) return false;
+        const rows = table.querySelectorAll('tbody tr');
+
+        for (const row of rows) {
+            const cells = row.querySelectorAll('td');
+
+        const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+        const statusIndex = headers.findIndex(h => h === 'Status');
+
+        if (statusIndex === -1) return false;
+        const statusText = cells[statusIndex]?.textContent?.trim().toLowerCase();
+        if (statusText === 'created') {
+            return true;
+        }
+    }
+});
+        const row = this.page.locator('tbody tr', {has: this.page.locator('td', { hasText: 'Created' })}).first();
+        await row.waitFor({ state: 'visible', timeout: 30000 });
+        await row.locator('.mat-menu-trigger').click();
+        this.study_number = await row.locator('#openGalleryIcon').innerText();
+        console.log('Study number noted:', this.study_number);
+}
+
     private slides_mapped_col: string = '';
     async userHasNotedStudyNoAndSlidesMapped() {
         try {
@@ -1427,5 +1472,94 @@ export class TechnicianPage {
         }
     }
 
+    async clickEditOption(){
+        try {
+            const editOption = this.page.locator('button.mat-menu-item', { hasText: 'Edit' });
+            await editOption.click();
+        }
+        catch (error) {
+            throw new Error('Failed to click on edit option: ' + error);
+        }
+
+    }
+    async verifyEditStudyFields(field: string){
+         try {
+            const escaped = field.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const locator = this.page.locator('mat-label').filter({hasText: new RegExp(`^${escaped}\\s*\\*?$`, 'i')});
+            await expect(locator).toBeVisible({ visible: true });
+        } catch (error) {
+            throw new Error('Failed to verify left panel section: ' + error);
+        }
+
+    }
+
+   async fieldIsEditable(field: string, value: string) {
+    const label = this.page.locator('mat-label', { hasText: field });
+    if (await label.isVisible()) {
+        await label.fill(value);
+    }
+    else {
+        console.log(`Field "${field}" is not visible.`);
+    }
+    
+}
+
+    async editStudyDetails(){
+        await this.fieldIsEditable('Project No.', "Project123");
+        await this.fieldIsEditable('Accession No.', "Accession123");
+        await this.fieldIsEditable('Sacrifice', "Sacrifice123");
+        await this.fieldIsEditable('CRO', "CRO123");
+        await this.fieldIsEditable('Test Item', "Test123");
+
+        await this.page.locator("//mat-select[@formcontrolname='species']").click();
+        await this.page.waitForTimeout(1000);
+        await this.listbox.first().click();
+
+        await this.page.locator("//mat-select[@formcontrolname='studyDomain']").click();
+        await this.page.waitForTimeout(1000);
+        await this.listbox.first().click();
+
+        await this.page.locator("//mat-select[@formcontrolname='treatment']").click();
+        await this.page.waitForTimeout(1000);
+        await this.listbox.first().click();
+    
+    }
+
+    async navigateToAnalysis(){
+        await this.analysis.click();
+    }
+
+    async verifyTabs(tabs: string){
+        try {
+            const locator = this.page.locator("//div[@class='mat-tab-label-content' and normalize-space()='" + tabs + "']");
+            await expect(locator).toBeVisible({visible: true, timeout: 500});
+        } catch (error) {
+            throw new Error('Failed to verify columns: ' + error);
+        }
+    }
+
+    async clickDeleteOption(){
+        try {
+            const deleteOption = this.page.locator('button.mat-menu-item', { hasText: 'Delete' });
+            await deleteOption.click();
+        }
+        catch (error) {
+            throw new Error('Failed to click on delete option: ' + error);
+        }
+    }
+
+    async clickSyncImagesOption(){
+        try {
+            const syncImagesOption = this.page.locator('button.mat-menu-item', { hasText: 'Sync Images' });
+            await syncImagesOption.click();
+        }
+        catch (error) {
+            throw new Error('Failed to click on sync images option: ' + error);
+        }
+    }
+
+    async verifyDelete(){
+        await this.deleteButton.click();
+    }
 }
 

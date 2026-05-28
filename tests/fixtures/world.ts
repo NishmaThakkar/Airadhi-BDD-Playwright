@@ -13,6 +13,7 @@ export class CustomWorld extends World {
   technicianPage!: TechnicianPage;
   expect = expect;
   userDeactivated?: boolean;
+ // consoleErrors: string[] = [];
 }
 
 setWorldConstructor(CustomWorld);
