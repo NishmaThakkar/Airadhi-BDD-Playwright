@@ -1,15 +1,32 @@
 import { Page, expect } from '@playwright/test';
 import { error } from 'console';
-import { exitCode } from 'process';
-
+import { faker } from '@faker-js/faker';
 
 export class TechnicianPage {
-    constructor(private page: Page) { }
-    private repo_name: string = '';
-    //  private study_number: string = '';
 
+    private folder;
+    private studyField;
+    private listbox;
+    private analysis;
+    private deleteButton;
+    private threeDotsButton;
+    private study_number: string = '';
+    private repo_name: string = '';
+    private saveExitButton;
+
+    constructor(private page: Page) {
+
+        this.folder = this.page.locator("//mat-icon[@svgicon='folderSvgIcon']");
+        this.studyField = this.page.locator('mat-label');
+        this.listbox = this.page.locator("//div[@role='listbox']//mat-option");
+        this.analysis = this.page.locator('p', { hasText: 'Analysis' });
+        this.deleteButton = this.page.locator("//button[text()='Delete']");
+        this.threeDotsButton = this.page.locator('tr.expandable-element-row').first().locator('.mat-menu-trigger');
+        this.saveExitButton = this.page.locator("//button//span[contains(text(),'Save & Exit')]");
+     }
+    
     async loginTechnician() {
-        await this.page.goto('https://airadhi-merck-uat.airamatrix.in/AIRADHI/login');
+        await this.page.goto('http://airadhi-qc-internal.airamatrix.in/');
         await this.page.getByRole('textbox', { name: 'Email ID' }).fill("nishma.thakkar@airamatrix.com");
         await this.page.getByRole('textbox', { name: 'Password' }).fill("Password@1");
         await this.page.waitForTimeout(10000);
@@ -37,8 +54,8 @@ export class TechnicianPage {
             const filePath = `./test-data/${excelFilePath}`;
             const templateSelector = templateName;
             await expect(this.page.locator('#mat-select-value-5')).toBeVisible();
-            await this.page.getByRole('combobox').first().click();
-            await this.page.getByText(templateSelector).click();
+    //        await this.page.getByRole('combobox').first().click();
+    //        await this.page.getByocator(templateSelector).click();
             await this.page.setInputFiles('input[type="file"]', filePath);
             await this.page.getByRole('button', { name: 'Create' }).click();
         } catch (error) {
@@ -47,18 +64,17 @@ export class TechnicianPage {
     }
 
     async enterStudyDetails() {
+        await this.page.getByRole('textbox', { name: 'Study No.' }).fill(faker.string.alphanumeric(8));
+   //     await this.page.getByRole('textbox', { name: 'Study No.' }).fill(faker.string.alphanumeric(8));
         await this.page.locator('div').filter({ hasText: /^Study title$/ }).nth(3).click();
         await this.page.getByRole('textbox', { name: 'Study title' }).fill('Study1');
-        await this.page.getByRole('textbox', { name: 'Study title' }).press('Tab');
         await this.page.getByRole('textbox', { name: 'Project No.' }).fill('Proj-09');
-        await this.page.getByRole('textbox', { name: 'Project No.' }).press('Tab');
         await this.page.getByRole('textbox', { name: 'Project No.' }).click();
-        await this.page.locator('div').filter({ hasText: /^Study Administrator\*$/ }).nth(3).click();
-        await this.page.getByText('Nishma Thakkar', { exact: true }).click();
-        await expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden();
+        await this.page.locator('div').filter({ hasText: /^Study Director\*$/ }).nth(1).click();
+        await this.listbox.first().click();
         await this.page.locator('div').filter({ hasText: /^Pathologist\*$/ }).nth(3).click();
-        await this.page.getByRole('option', { name: 'Nishma Thakkar' }).click();
-        await expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden()
+        await this.listbox.first().click();
+      //  await expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden()
         await this.page.locator('div').filter({ hasText: /^Species \*$/ }).nth(3).click();
         await this.page.getByText('Mice').click();
 
@@ -127,7 +143,6 @@ export class TechnicianPage {
         const plusIcon = createStudyBtn.locator('i.fa.fa-plus');
         await expect(plusIcon).toBeVisible({ timeout: 5000 });
     }
-
 
     // Method to verify study table columns
     async verifyStudyTableColumn(column: string) {
@@ -368,9 +383,12 @@ export class TechnicianPage {
 
     // Method to navigate back to image repository from image details
     async navigateToImgRepoBack() {
+
         try {
-            await this.page.locator('div.repoFolderSelection span.selectionFolderNames', { hasText: this.repo_name }).click();
-            await this.page.waitForTimeout(2000);
+            if(await this.folder.isVisible()) {
+                await this.page.locator('div.repoFolderSelection span.selectionFolderNames', { hasText: this.repo_name }).click();
+                await this.page.waitForTimeout(2000);
+            }
         } catch (error) {
             throw new Error('Failed to navigate back to image repository: ' + error);
         }
@@ -440,7 +458,7 @@ export class TechnicianPage {
     } catch (error) {
         throw new Error('Failed to verify study is displayed with that study number: ' + error);
     }
-
+    }
     // Method to verify study status is displayed on table with that study status on Technician dashboard
     async verifyStudyStatusDisplayed(study_status: string, study_number: string) {
         try {
@@ -460,8 +478,32 @@ export class TechnicianPage {
 
     }
 
-    // Method to note study number and slides mapped for first study in the list
-    private study_number: string = '';
+    async verifyStatus(){
+        await this.page.waitForFunction(() => {
+        const table = document.querySelector('table');
+        if (!table) return false;
+        const rows = table.querySelectorAll('tbody tr');
+
+        for (const row of rows) {
+            const cells = row.querySelectorAll('td');
+
+        const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+        const statusIndex = headers.findIndex(h => h === 'Status');
+
+        if (statusIndex === -1) return false;
+        const statusText = cells[statusIndex]?.textContent?.trim().toLowerCase();
+        if (statusText === 'created') {
+            return true;
+        }
+    }
+});
+        const row = this.page.locator('tbody tr', {has: this.page.locator('td', { hasText: 'Created' })}).first();
+        await row.waitFor({ state: 'visible', timeout: 30000 });
+        await row.locator('.mat-menu-trigger').click();
+        this.study_number = await row.locator('#openGalleryIcon').innerText();
+        console.log('Study number noted:', this.study_number);
+}
+
     private slides_mapped_col: string = '';
     async userHasNotedStudyNoAndSlidesMapped() {
         try {
@@ -1323,24 +1365,15 @@ export class TechnicianPage {
     async verifyDosageFilterFunctionality(){
         try {
             await this.page.waitForTimeout(1500);
-
             await this.page.waitForTimeout(1500);
             const first_dosage = this.page.locator('mat-option').last().locator('mat-pseudo-checkbox'); // select option
-
             await first_dosage.click({force:true});
-
             await this.page.locator('mat-option').first().locator('mat-pseudo-checkbox').click({force:true}); // select option
-
             await this.page.waitForTimeout(1500);
-
             this.page.locator('.tabordion').locator('#section1').click({force:true}); //Close filter
-
             await this.page.waitForTimeout(1500);
-          
             await this.page.getByRole('button', { name: 'Apply' }).click({ force: true });
-
             await this.page.waitForTimeout(1500);
-
             await this.page.getByRole('button', { name: 'Apply' }).click({ force: true });
 
             await this.page.waitForTimeout(2500);
@@ -1368,21 +1401,16 @@ export class TechnicianPage {
     }
 
     // Method to verify Dosage and Subject ID filter in combination
-    
     async validateDosageAndSubjectIDFilter(){
         try {
             console.log('-----------------------------');
             await this.page.getByRole('button', { name: 'Apply' }).click({ force: true });
-
             await this.page.waitForTimeout(2500);
 
             const filtered_dosage = this.filteredDosage = (await this.page.locator('.indvImage div.imageName').allTextContents()).map(v => v.split(',')[0].trim());
-
             console.log('After Filter: Filtered Dosage from slide :', Array.from(this.filteredDosage));
-
             const valueSelectedDosage = await this.page.locator('.galleryHeaderFilterPopOverRowDiv .mat-select-min-line').first().allInnerTexts();
             console.log('Value selected from dosage dropdown filter:', valueSelectedDosage);
-
             const valueSelectedDosage_splitValues = (await this.page.locator('.galleryHeaderFilterPopOverRowDiv .mat-select-min-line').first().allInnerTexts()).flatMap(text =>text.split(',').map(v => v.trim().toLowerCase()));
 
             for(const dosage of this.filteredDosage){
@@ -1391,9 +1419,7 @@ export class TechnicianPage {
                 //console.log(`Filtered dosage: ${dosage}`);
                 expect(valueSelectedDosage_splitValues,`Expected selected filter values [${valueSelectedDosage_splitValues.join(', ')}]to contain filtered dosage "${normalizedDosage}"`).toContain(normalizedDosage);
             }
-
-                console.log('-----------------------------');
-
+            console.log('-----------------------------');
             const filtered_subID = this.filteredSubjectID = (await this.page.locator('.indvImage div.imageName').allTextContents()).map(v => v.split(',')[1].trim());
 
             console.log('After Filter: Filtered Subject IDs from slide :', Array.from(this.filteredSubjectID));
@@ -1427,5 +1453,106 @@ export class TechnicianPage {
         }
     }
 
+    async clickEditOption(){
+        try {
+            const editOption = this.page.locator('button.mat-menu-item', { hasText: 'Edit' });
+            await editOption.click();
+        }
+        catch (error) {
+            throw new Error('Failed to click on edit option: ' + error);
+        }
+    }
+    async verifyEditStudyFields(field: string){
+         try {
+            const escaped = field.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const locator = this.page.locator('mat-label').filter({hasText: new RegExp(`^${escaped}\\s*\\*?$`, 'i')});
+            await expect(locator).toBeVisible({ visible: true });
+        } catch (error) {
+            throw new Error('Failed to verify left panel section: ' + error);
+        }
+    }
+
+   async fieldIsEditable(field: string, value: string) {
+    const label = this.page.locator('mat-label', { hasText: field });
+    if (await label.isVisible()) {
+        await label.fill(value);
+    }
+    else {
+        console.log(`Field "${field}" is not visible.`);
+    }
+}
+
+    async dropdownisEditable(field: string){
+        const dropdown = this.page.locator("//mat-select[@formcontrolname='" + field + "']");
+        if (await dropdown.isVisible()) {
+            await dropdown.click();
+            await this.page.waitForTimeout(1000);
+            await this.listbox.first().click();
+        }
+    }
+
+    async editStudyDetails(){
+        await this.fieldIsEditable('Project No.', "Project123");
+        await this.fieldIsEditable('Accession No.', "Accession123");
+        await this.fieldIsEditable('Sacrifice', "Sacrifice123");
+        await this.fieldIsEditable('CRO', "CRO123");
+        await this.fieldIsEditable('Test Item', "Test123");
+
+        await this.dropdownisEditable('species');
+        await this.dropdownisEditable('studyDomain');
+        await this.dropdownisEditable('treatment');
+
+}
+
+    async navigateToAnalysis(){
+        await this.analysis.click();
+    }
+
+    async verifyTabs(tabs: string){
+        try {
+            const locator = this.page.locator("//div[@class='mat-tab-label-content' and normalize-space()='" + tabs + "']");
+            await expect(locator).toBeVisible({visible: true, timeout: 500});
+        } catch (error) {
+            throw new Error('Failed to verify columns: ' + error);
+        }
+    }
+
+    async clickDeleteOption(){
+        try {
+            const deleteOption = this.page.locator('button.mat-menu-item', { hasText: 'Delete' });
+            await deleteOption.click();
+        }
+        catch (error) {
+            throw new Error('Failed to click on delete option: ' + error);
+        }
+    }
+
+    async clickSyncImagesOption(){
+        try {
+            const syncImagesOption = this.page.locator('button.mat-menu-item', { hasText: 'Sync Images' });
+            await syncImagesOption.click();
+        }
+        catch (error) {
+            throw new Error('Failed to click on sync images option: ' + error);
+        }
+    }
+
+    async verifyDelete(){
+        await this.deleteButton.click();
+    }
+
+    async clickTab(tab: string){
+       try {
+            const locator = this.page.locator("//div[@class='mat-tab-label-content' and normalize-space()='" + tab + "']");
+            await expect(locator).toBeVisible({visible: true, timeout: 500});
+            await locator.click();
+        } catch (error) {
+            throw new Error('Failed to verify columns: ' + error);
+        }
+    }
+
+    async saveAndExit(){
+        await this.saveExitButton.click();
+    }
 }
 

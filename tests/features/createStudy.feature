@@ -1,4 +1,4 @@
-@study
+@createstudy
 Feature: Study creation workflow
 
 Background:
