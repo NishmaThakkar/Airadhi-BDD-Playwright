@@ -1,54 +1,50 @@
 import { Given, When, Then } from '@cucumber/cucumber';
-import { TechnicianPage } from '../../pages/TechnicianPage';
+import { CustomWorld  } from '../../tests/fixtures/world';
 
-Given('user has logged in as Technician', async function () {
-  this.technicianPage = new TechnicianPage(this.page);
-  await this.technicianPage.loginTechnician();
-});
 
-When('user navigate to Technician dashboard', async function () {
+Given('user navigate to Technician dashboard', async function (this: CustomWorld) {
     await this.technicianPage.selectTechnicianRole();
 });
 
-Then('user should see the left side panel with sections:', async function (dataTable) {
+Then('user should see the left side panel with sections:', async function (this: CustomWorld, dataTable) {
   const sections = dataTable.raw().flat(); // ["Study", "Image Repository", "Analysis", "Configure"]
   for (const section of sections) {
     await this.technicianPage.verifyLeftPanelSection(section);
   }
 });
 
-Then('user should see the status dropdown with options', async function () {
+Then('user should see the status dropdown with options', async function (this: CustomWorld) {
     await this.technicianPage.verifyStatusDropdownOption();
 });
 
-Then('user should able to search text in search box', async function () {
+Then('user should able to search text in search box', async function (this: CustomWorld) {
     await this.technicianPage.verifySearchBox();
 });
 
-Then('user should see plus icon for create study', async function () {
+Then('user should see plus icon for create study', async function (this: CustomWorld) {
     await this.technicianPage.displayCreateStudyIcon();
 });
 
-Then('user should view study table with columns:', async function (dataTable) {
+Then('user should view study table with columns:', async function (this: CustomWorld, dataTable) {
   const study_cols = dataTable.raw().flat(); // ["Study No.", "Study Administrator", "Pathologist", "Slides Mapped", "QC Count", "Anomaly Count", "Total Oragn", "Success", "Species", "Status"]
   for (const col of study_cols) {
     await this.technicianPage.verifyStudyTableColumn(col);
   }
 });
 
-Then('user should able to navigate Image Repository section', async function () {
+Then('user should able to navigate Image Repository section', async function (this: CustomWorld) {
     await this.technicianPage.navigateToImageRepository();
 });
 
-Then('user should view Image Repository tab', async function () {
+Then('user should view Image Repository tab', async function (this: CustomWorld) {
     await this.technicianPage.imageRepositoryTabDisplayed();
 });
 
-Then('user should view Search by Name text field', async function () {
+Then('user should view Search by Name text field', async function (this: CustomWorld) {
     await this.technicianPage.verifySearchByNameTextBox();
 });
 
-Then('user navigates to any image repository', async function () {
+Then('user navigates to any image repository', async function (this: CustomWorld) {
     await this.technicianPage.navigateToAnyImageRepository();
 });
 
@@ -64,66 +60,70 @@ Then('user views images in list format', async function () {
     await this.technicianPage.verifyListView();
 });
 
-Then('user view image repository table with columns:', async function (dataTable) {
+Then('user verify table with columns:', async function (this: CustomWorld, dataTable) {
   const imag_cols = dataTable.raw().flat(); // ["Name", "Size","Date Modified"]
   for (const col of imag_cols) {
     await this.technicianPage.verifyImageTableColumn(col);
   }
 });
 
-Then('user should able to navigate to grid view', async function () {
+Then('user should able to navigate to grid view', async function (this: CustomWorld) {
     await this.technicianPage.navigateToGridView();
 });
 
-Then('user should view images in grid format', async function () {
+Then('user should view images in grid format', async function (this: CustomWorld) {
      await this.technicianPage.verifyGridView();
 });
 
-Then('user verify images folder up to last folder in list format', async function () {
+Then('user verify images folder up to last folder in list format', async function (this: CustomWorld) {
      await this.technicianPage.clickAndVerifyImgFolderListView();
 });
 
-Then('user should able to navigate back to image repository', async function () {
+Then('user should able to navigate back to image repository', async function (this: CustomWorld) {
      await this.technicianPage.navigateToImgRepoBack();
 });
 
-Then('user verify images folder up to last folder in grid format', async function () {
+Then('user verify images folder up to last folder in grid format', async function (this: CustomWorld) {
      await this.technicianPage.clickAndVerifyImgFolderGridView();
 });
 
-Then('user navigate to Study section', async function () {
+Then('user navigate to Study section', async function (this: CustomWorld) {
      await this.technicianPage.navigateToStudySection();
 });
 
-When('user select study status {string} from dropdown', async function (study_status) {
+When('user select study status {string} from dropdown', async function (this: CustomWorld, study_status) {
      await this.technicianPage.selectStudyStatus(study_status);
 });
 
-When('user search study by study number {string} in search box', async function (study_number) {
+When('user search study by study number {string} in search box', async function (this: CustomWorld, study_number) {
      await this.technicianPage.searchStudyByNumber(study_number);
 });
 
-Then('user should see study displayed on table with that study number', async function () {
+Then('user should see study displayed on table with that study number', async function (this: CustomWorld) {
      await this.technicianPage.verifyStudyDisplayed();
 });
 
-Then('user should see study status displayed on table as {string} for that {string}', async function (study_status, study_number) {
+Then('user should see study status displayed on table as {string} for that {string}', async function (this: CustomWorld, study_status, study_number) {
      await this.technicianPage.verifyStudyStatusDisplayed(study_status,study_number);
 });
 
-When('user has noted study no. and slides mapped for first study', async function () {
+When('user has noted study no. and slides mapped for first study', async function (this: CustomWorld) {
      await this.technicianPage.userHasNotedStudyNoAndSlidesMapped();
 });
 
-When('user click on three dots on right side of any study', async function () {
+When('user check status of study, if study is in Created status then only user can edit the study details', async function(this: CustomWorld){
+     await this.technicianPage.verifyStatus();
+});
+
+When('user click on three dots on right side of any study', async function (this: CustomWorld) {
      await this.technicianPage.clickThreeDotsOnStudy();
 });
 
-Then('user should click on view report option', async function () {
+Then('user should click on view report option', async function (this: CustomWorld) {
      await this.technicianPage.clickViewReportOption();
 });
 
-Then('user should see view report popup header as {string}', async function (popup_header) {
+Then('user should see view report popup header as {string}', async function (this: CustomWorld,popup_header) {
      await this.technicianPage.verifyViewReportPopupDisplayed(popup_header);
 });
 
@@ -216,4 +216,150 @@ Then('user verify view by dropdown present inside study', async function(){
 
 Then('user should view select All checkbox is working', async function(){
      await this.technicianPage.verifySelectAllCheckBox();
+});
+
+When('user navigate inside folder', async function(){
+     await this.technicianPage.navigateInsideFolder();
+});
+
+When('user noted all dosage from slides', async function(){
+     await this.technicianPage.noteAllDosagesFromSlides();    
+});
+
+When('user noted dosage and subject id for all slides',async function(){
+     await this.technicianPage.noteDosageAndSubjectIDForAllSlides();
+})
+
+When('user click the filter', async function(){
+     await this.technicianPage.clickFilterIcon();
+});
+
+When('user noted all dosages from Dosage dropdown', async function(){
+     await this.technicianPage.noteAllDosagesFromDosageDropdown();
+});
+
+When('user noted all subject id from slides', async function(){
+     await this.technicianPage.noteAllSubjectIDFromSlides();
+});
+
+When('user opens dosage dropdown', async function(){
+     await this.technicianPage.openDosageDropdown();
+});
+
+When('user opens subject id dropdown', async function(){
+     await this.technicianPage.openSubjectIDDropdown();
+});
+
+When('user noted all subject id from Subject ID dropdown', async function(){
+     await this.technicianPage.noteAllSubjectIDFromSubjectIDDropdown();
+});
+
+When('user click filter icon to close subject id dropdown', async function(){
+     await this.technicianPage.clickFilterIcon();
+});
+
+Then('user validate dropdown dosage values and slide dosage values are matched', async function(){
+     await this.technicianPage.verifyDosageValuesMatched();
+});
+
+Then('user validate dropdown subject id values and slide subject id values are matched', async function(){
+     await this.technicianPage.verifySubjectIDValuesMatched();
+});
+
+Then('user validate dosage filter is working as per expectations', async function(){
+     await this.technicianPage.verifyDosageFilterFunctionality();
+});
+
+Then('user validate subject id filter is working as per expectations', async function(){
+     await this.technicianPage.verifySubjectIDFilterFunctionality();
+});
+
+Then('user open subject id dropdown', async function(){
+     await this.technicianPage.openSubjectIDDropdown();
+});
+
+When ('user selects subject id from subject id dropdown', async function(){
+     await this.technicianPage.selectSubjectIdFromDropdown();
+});
+
+When ('user picked any two slides dosage and subject id from slide to be filtered', async function(){
+     await this.technicianPage.pickAnyTwoslidesDosage_SubjectID();
+});
+
+When ('user selects dosages from picked elements', async function(){
+     await this.technicianPage.selectDosageFromPickedElements();
+});
+
+When ('user selects subject ids from picked elements', async function(){
+     await this.technicianPage.selectSubjectIdFromPickedElements();
+});
+
+Then ('user validates slides are displayed as per filter applied', async function(){
+     await this.technicianPage.validateDosageAndSubjectIDFilter();
+});
+
+Then('user should click on edit option', async function(this: CustomWorld){
+     await this.technicianPage.clickEditOption();
+});
+
+Then('user verify fields in edit study page:', async function(this: CustomWorld, dataTable){
+     const edit_study_fields = dataTable.raw().flat();
+     for (const field of edit_study_fields) {
+        await this.technicianPage.verifyEditStudyFields(field);
+     }
+});
+
+Then('user should able to edit study details', async function(this: CustomWorld){
+     await this.technicianPage.editStudyDetails();
+});
+
+Then('user should see success message of study updation', async function(this: CustomWorld){
+     await this.applicationAdmin.verifySuccessMessage(' Study Edited Successfully ');
+});
+
+Given('user navigate to Analysis dashboard', async function (this: CustomWorld) {
+     await this.technicianPage.navigateToAnalysis();
+});
+
+Then('User should view all the tabs in Analysis section:', async function (this: CustomWorld, dataTable) {
+    const tabs = dataTable.raw().flat();
+     for (const tab of tabs) {
+           await this.technicianPage.verifyTabs(tab);
+     }
+});
+
+Then('user should click on delete option', async function(this: CustomWorld){
+     await this.technicianPage.clickDeleteOption();
+});
+
+Then('user should see confirmation popup with message {string}', async function(this: CustomWorld, message) {
+     await this.technicianPage.verifyViewReportPopupDisplayed(message);
+});
+
+Then('user should click on Sync Images option', async function(this: CustomWorld){
+     await this.technicianPage.clickSyncImagesOption();
+});
+
+When('user clicks on Delete button', async function(this: CustomWorld){
+     await this.technicianPage.verifyDelete();
+});
+
+When('user click on Analysis tab', async function(this: CustomWorld, ){
+     await this.technicianPage.clickTab('Analysis');
+});
+
+Then('user should see success message of study deletion', async function(this: CustomWorld){
+     await this.applicationAdmin.verifySuccessMessage(' Study Deleted Successfully ');
+});
+
+When('Admin clicks on Save & Exit button', async function(this: CustomWorld){
+     await this.technicianPage.saveAndExit();
+});
+
+Then('user should see success message of study creation', async function(this: CustomWorld){
+     await this.applicationAdmin.verifySuccessMessage(' Study created successfully ');
+});
+
+Then('Status should be displayed as In Progress for the created study', async function(this: CustomWorld){
+     await this.technicianPage.verifyStudyStatusDisplayed('In Progress','1AID7organs');
 });

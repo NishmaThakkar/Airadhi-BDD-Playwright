@@ -1,0 +1,7 @@
+﻿ImageId,StudyImageId,Image Location,Image Tag,Barcode,Stain,Merck Study Number,Slide Number,Recut Number,Request Number,Necropsy,Animal Number,Dose Group,Sex,Block ID,Tissue Type,Merck Barcode
+423731,695919,"  
+\mnt\javadev\Nishma\test\MerckTesting\Heart.svs",2c9db954-6953-1b10-1d72-1de8cc315644_141210.svs,,,24-3517,6,0,0,FN,1000,4,Male,"04.0-0,04A,,,","Heart,Skeletal Muscle (Quadriceps)",BS2500003274
+454353,645646,\\storage.aira.com\pathology_wp_all\test\MerckTesting\Lung.svs,13c90d87-77b3-c60c-c8fe-e5f704d365e1_162729.svs ,,,,,,,,,4,,,"Heart,Skeletal Muscle (Quadriceps)",
+323334,244242,/mnt/javadev/Nishma/MerckTesting/Liver.svs,,,,,,,,,,2,,,Liver,
+867854,535353,/mnt/javadev/Nishma/MerckTesting/Heart.svs,,,,,,,,,,2,,,"Heart,Skeletal Muscle (Quadriceps)",
+5454354,646446,/mnt/javadev/Nishma/MerckTesting/Kidney.svs,,,,,,,,,,3,,,Kidney,

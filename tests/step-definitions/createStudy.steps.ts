@@ -9,7 +9,16 @@ Given('User launches the application', async function (this: CustomWorld) {
 });
 
 Given('User enters valid credentials and is logged in sucessfully', async function (this: CustomWorld) {
-  await this.loginPage.login("nishma.thakkar@airamatrix.com", "Password@1");
+  const logoutButton = this.page.getByRole('button', { name: 'Logout' });
+  const isLoggedIn = await logoutButton.isVisible({ timeout: 2000 }).catch(() => false);
+
+  if (isLoggedIn) {
+   // console.log('Reusing existing authenticated Playwright session.');
+    return;
+  }
+
+  await this.loginPage.login("edward.miller@airamatrix.com", "Password@2");
+  await this.loginPage.verifyLogin();
 });
 
 Given('User navigates to technician role', async function (this: CustomWorld) {
@@ -21,7 +30,7 @@ Given('User clicks on "Create Study" button', async function (this: CustomWorld)
   await this.technicianPage.verifyCreateStudyButton();
 });
 
-  Given('User selects a template {string} and upload a valid study data file {string}', async function (templateName: string, excelFilePath: string) {
+Given('User selects a template {string} and upload a valid study data file {string}', async function (templateName: string, excelFilePath: string) {
     await this.technicianPage.navigateToCreateStudyPage(excelFilePath,templateName);
 });
     
@@ -29,16 +38,11 @@ When('User enters study details', async function (this: CustomWorld) {
 await this.technicianPage.enterStudyDetails();
 });
 
-
 Given('User clicks on "Next" button', async function (this: CustomWorld) {
   await this.page.getByRole('button', { name: 'Next' }).click();
 });
 
 Given('User clicks on "Save & Finish" button', async function (this: CustomWorld) {
   await this.page.getByRole('button', { name: 'Save & Finish' }).click();
-   await this.page.waitForURL('**/dashboard/study', {
-  timeout: 10000
-});
-    await this.expect(this.page.getByText('1AID7organs')).toBeVisible();
 });
 

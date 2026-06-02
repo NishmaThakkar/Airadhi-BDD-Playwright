@@ -1,15 +1,32 @@
 import { Page, expect } from '@playwright/test';
 import { error } from 'console';
-import { exitCode } from 'process';
-
+import { faker } from '@faker-js/faker';
 
 export class TechnicianPage {
-    constructor(private page: Page) { }
-    private repo_name: string = '';
-    //  private study_number: string = '';
 
+    private folder;
+    private studyField;
+    private listbox;
+    private analysis;
+    private deleteButton;
+    private threeDotsButton;
+    private study_number: string = '';
+    private repo_name: string = '';
+    private saveExitButton;
+
+    constructor(private page: Page) {
+
+        this.folder = this.page.locator("//mat-icon[@svgicon='folderSvgIcon']");
+        this.studyField = this.page.locator('mat-label');
+        this.listbox = this.page.locator("//div[@role='listbox']//mat-option");
+        this.analysis = this.page.locator('p', { hasText: 'Analysis' });
+        this.deleteButton = this.page.locator("//button[text()='Delete']");
+        this.threeDotsButton = this.page.locator('tr.expandable-element-row').first().locator('.mat-menu-trigger');
+        this.saveExitButton = this.page.locator("//button//span[contains(text(),'Save & Exit')]");
+     }
+    
     async loginTechnician() {
-        await this.page.goto('https://airadhi-merck-uat.airamatrix.in/AIRADHI/login');
+        await this.page.goto('http://airadhi-qc-internal.airamatrix.in/');
         await this.page.getByRole('textbox', { name: 'Email ID' }).fill("nishma.thakkar@airamatrix.com");
         await this.page.getByRole('textbox', { name: 'Password' }).fill("Password@1");
         await this.page.waitForTimeout(10000);
@@ -37,8 +54,8 @@ export class TechnicianPage {
             const filePath = `./test-data/${excelFilePath}`;
             const templateSelector = templateName;
             await expect(this.page.locator('#mat-select-value-5')).toBeVisible();
-            await this.page.getByRole('combobox').first().click();
-            await this.page.getByText(templateSelector).click();
+    //        await this.page.getByRole('combobox').first().click();
+    //        await this.page.getByocator(templateSelector).click();
             await this.page.setInputFiles('input[type="file"]', filePath);
             await this.page.getByRole('button', { name: 'Create' }).click();
         } catch (error) {
@@ -48,62 +65,19 @@ export class TechnicianPage {
 
     //Method to enter study details and create study when all data configuration is enabled
     async enterStudyDetails() {
-
-    await this.page.locator('div').filter({ hasText: /^Study No\.\*$/ }).nth(3).click();
-    await this.page.getByRole('textbox', { name: 'Study No.*' }).fill('9organ1Animal');
-    await this.page.locator('div').filter({ hasText: /^Study title$/ }).nth(3).click();
-    await this.page.getByRole('textbox', { name: 'Study title' }).fill('test');
-    await this.page.locator('div').filter({ hasText: /^Project No\.$/ }).nth(3).click();
-    await this.page.getByRole('textbox', { name: 'Project No.' }).fill('Proj-3');
-    await this.page.locator('div').filter({ hasText: /^Accession No\.$/ }).first().click();
-    await this.page.getByRole('textbox', { name: 'Accession No.' }).fill('00');
-    await this.page.locator('div').filter({ hasText: /^Study Administrator\*$/ }).nth(3).click();
-    await this.page.getByText('Nishma Thakkar', { exact: true }).click();
-    await this.page.locator('div').filter({ hasText: /^Pathologist\*$/ }).nth(3).click();
-    await this.page.locator('#mat-option-33').getByText('Nishma Thakkar').click();
-    await this.page.locator('div').filter({ hasText: /^Peer Reviewer$/ }).nth(3).click();
-    await this.page.locator('#mat-option-57').getByText('Nishma Thakkar').click();
-    await this.page.getByText('Suyog').click();
-    await this.page.locator('div').filter({ hasText: /^Study Domain$/ }).nth(3).click();
-    await this.page.getByText('Pre-Clinical').click();
-    await this.page.locator('div').filter({ hasText: /^Treatment$/ }).nth(3).click();
-    await this.page.getByText('Treatement-test').click();
-    await this.page.getByText('From–Duration').click();
-    await this.page.getByRole('button', { name: 'Open calendar' }).click();
-    await this.page.getByRole('button', { name: 'May 4,' }).click();
-    await this.page.getByRole('button', { name: 'May 11,' }).click();
-    await this.page.getByRole('textbox', { name: 'Sacrifice' }).click();
-    await this.page.locator('div').filter({ hasText: /^Sacrifice$/ }).nth(3).click();
-    await this.page.getByRole('textbox', { name: 'Sacrifice' }).click();
-    await this.page.getByRole('textbox', { name: 'Sacrifice' }).fill('NA');
-    await this.page.locator('div').filter({ hasText: /^Species \*$/ }).nth(3).click();
-    await this.page.getByText('Mice').click();
-    await this.page.getByRole('textbox', { name: 'Strain' }).click();
-    await this.page.getByRole('textbox', { name: 'Strain' }).fill('122');
-    await this.page.locator('div').filter({ hasText: /^CRO$/ }).nth(3).click();
-    await this.page.getByRole('textbox', { name: 'CRO' }).fill('222');
-    await this.page.locator('.mat-select-placeholder').first().click();
-    await this.page.getByText('Nasal').click();
-    await this.page.locator('div').filter({ hasText: /^Test Item$/ }).nth(3).click();
-    await this.page.getByRole('textbox', { name: 'Test Item' }).fill('teat');
-    await this.page.locator('div').filter({ hasText: /^Additional Pathologists$/ }).nth(3).click();
-    await this.page.getByText('Vinayak Londhe').click();
-    await this.page.locator('.cdk-overlay-backdrop').click();
-    await this.page.locator('.mat-checkbox-inner-container').click();
-       // await this.page.locator('div').filter({ hasText: /^Study title$/ }).nth(3).click();
-        // await this.page.getByRole('textbox', { name: 'Study title' }).fill('Study1');
-        // await this.page.getByRole('textbox', { name: 'Study title' }).press('Tab');
-        // await this.page.getByRole('textbox', { name: 'Project No.' }).fill('Proj-09');
-        // await this.page.getByRole('textbox', { name: 'Project No.' }).press('Tab');
-        // await this.page.getByRole('textbox', { name: 'Project No.' }).click();
-        // await this.page.locator('div').filter({ hasText: /^Study Administrator\*$/ }).nth(3).click();
-        // await this.page.getByText('Nishma Thakkar', { exact: true }).click();
-        // await expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden();
-        // await this.page.locator('div').filter({ hasText: /^Pathologist\*$/ }).nth(3).click();
-        // await this.page.getByRole('option', { name: 'Nishma Thakkar' }).click();
-        // await expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden()
-        // await this.page.locator('div').filter({ hasText: /^Species \*$/ }).nth(3).click();
-        // await this.page.getByText('Mice').click();
+        await this.page.getByRole('textbox', { name: 'Study No.' }).fill(faker.string.alphanumeric(8));
+   //     await this.page.getByRole('textbox', { name: 'Study No.' }).fill(faker.string.alphanumeric(8));
+        await this.page.locator('div').filter({ hasText: /^Study title$/ }).nth(3).click();
+        await this.page.getByRole('textbox', { name: 'Study title' }).fill('Study1');
+        await this.page.getByRole('textbox', { name: 'Project No.' }).fill('Proj-09');
+        await this.page.getByRole('textbox', { name: 'Project No.' }).click();
+        await this.page.locator('div').filter({ hasText: /^Study Director\*$/ }).nth(1).click();
+        await this.listbox.first().click();
+        await this.page.locator('div').filter({ hasText: /^Pathologist\*$/ }).nth(3).click();
+        await this.listbox.first().click();
+      //  await expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden()
+        await this.page.locator('div').filter({ hasText: /^Species \*$/ }).nth(3).click();
+        await this.page.getByText('Mice').click();
 
     }
     // Method to verify left panel sections
@@ -170,7 +144,6 @@ export class TechnicianPage {
         const plusIcon = createStudyBtn.locator('i.fa.fa-plus');
         await expect(plusIcon).toBeVisible({ timeout: 5000 });
     }
-
 
     // Method to verify study table columns
     async verifyStudyTableColumn(column: string) {
@@ -411,9 +384,12 @@ export class TechnicianPage {
 
     // Method to navigate back to image repository from image details
     async navigateToImgRepoBack() {
+
         try {
-            await this.page.locator('div.repoFolderSelection span.selectionFolderNames', { hasText: this.repo_name }).click();
-            await this.page.waitForTimeout(2000);
+            if(await this.folder.isVisible()) {
+                await this.page.locator('div.repoFolderSelection span.selectionFolderNames', { hasText: this.repo_name }).click();
+                await this.page.waitForTimeout(2000);
+            }
         } catch (error) {
             throw new Error('Failed to navigate back to image repository: ' + error);
         }
@@ -469,20 +445,21 @@ export class TechnicianPage {
 
     // Method to verify study is displayed on table with that study number on Technician dashboard
     async verifyStudyDisplayed() {
-        try {
-            await this.page.waitForLoadState('networkidle');
-            const study_number_searched = await this.page.locator('input[placeholder="Search"]').inputValue();
-            console.log('Study number searched:', study_number_searched);
-            const row = this.page.locator('table tbody tr', { hasText: study_number_searched });
-            await expect(row).toBeVisible();
-            const study_number_displayed = await row.locator('div[title]').first().innerText();
-            console.log('Study number displayed:', study_number_displayed);
-            expect(study_number_displayed?.trim()).toBe(study_number_searched?.trim());
-        } catch (error) {
-            throw new Error('Failed to verify study is displayed with that study number: ' + error);
-        }
+    try {
+        await this.page.waitForLoadState('networkidle');
+        const study_number_searched = await this.page.locator('input[placeholder="Search"]').inputValue();
+        console.log('Study number searched:', study_number_searched);
+        const row = this.page.locator('table tbody tr', {hasText: study_number_searched});
+        await this.page.waitForTimeout(2000);
+        await expect(row).toBeVisible();
+        const study_number_displayed = await row.locator('div[title]').first().innerText();
+        console.log('Study number displayed:', study_number_displayed);
+        await this.page.waitForTimeout(2000);
+        expect(study_number_displayed?.trim()).toBe(study_number_searched?.trim());
+    } catch (error) {
+        throw new Error('Failed to verify study is displayed with that study number: ' + error);
     }
-
+    }
     // Method to verify study status is displayed on table with that study status on Technician dashboard
     async verifyStudyStatusDisplayed(study_status: string, study_number: string) {
         try {
@@ -502,8 +479,32 @@ export class TechnicianPage {
 
     }
 
-    // Method to note study number and slides mapped for first study in the list
-    private study_number: string = '';
+    async verifyStatus(){
+        await this.page.waitForFunction(() => {
+        const table = document.querySelector('table');
+        if (!table) return false;
+        const rows = table.querySelectorAll('tbody tr');
+
+        for (const row of rows) {
+            const cells = row.querySelectorAll('td');
+
+        const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+        const statusIndex = headers.findIndex(h => h === 'Status');
+
+        if (statusIndex === -1) return false;
+        const statusText = cells[statusIndex]?.textContent?.trim().toLowerCase();
+        if (statusText === 'created') {
+            return true;
+        }
+    }
+});
+        const row = this.page.locator('tbody tr', {has: this.page.locator('td', { hasText: 'Created' })}).first();
+        await row.waitFor({ state: 'visible', timeout: 30000 });
+        await row.locator('.mat-menu-trigger').click();
+        this.study_number = await row.locator('#openGalleryIcon').innerText();
+        console.log('Study number noted:', this.study_number);
+}
+
     private slides_mapped_col: string = '';
     async userHasNotedStudyNoAndSlidesMapped() {
         try {
@@ -704,9 +705,11 @@ export class TechnicianPage {
 
     // Method to navigate inside study
 
-    async navigateInsideStudy() {
-        try {
-            const studyLocator = this.page.locator('.orangeText').first();
+    async navigateInsideStudy(){
+        try{
+
+                await this.page.waitForTimeout(5000);
+                const studyLocator = this.page.locator('.orangeText').first();
 
             const study_no = (await studyLocator.textContent())?.trim();
             console.log('Study No:', study_no);
@@ -717,15 +720,15 @@ export class TechnicianPage {
             const study_inside = await this.page.locator('.activeStudyNameText').textContent();
             console.log('Study no inside :', study_inside);
         }
-        catch (error) {
-            throw new Error("Failed to verify study no. on UI and inside study: " + error);
+        catch(error){
+            throw new Error("Failed to navigate inside the study no. clicked OR Study no. not visible: "+ error);
         }
     }
 
     // Method to select value from View By dropdown
-    async selectValuefromViewByDropdown(value: string) {
-        try {
-            const viewby_dropdown = this.page.locator('//mat-form-field[.//mat-label[normalize-space()="View By"]]//div[contains(@class,"mat-select-trigger")]');
+    async selectValuefromViewByDropdown(value: string){
+        try{
+        const viewby_dropdown = this.page.locator('//mat-form-field[.//mat-label[normalize-space()="View By"]]//div[contains(@class,"mat-select-trigger")]');
 
             // Open dropdown
             await viewby_dropdown.click({ force: true });
@@ -748,6 +751,7 @@ export class TechnicianPage {
         try {
 
             const folder_locator = this.page.locator('div.indvStudy  div.folderIconDiv');
+            await folder_locator.first().waitFor({ state: 'visible', timeout: 5000 });
             this.folder_count = await folder_locator.count();
             return this.folder_count > 0;
 
@@ -950,33 +954,606 @@ export class TechnicianPage {
         try {
             if (await this.totalFolderInStudy()) {
 
-                const selectAllText = await this.page.locator('.mat-checkbox-label').first().innerText();
-                //this.page.locator('div.selectAllDiv').getByText('Select All');
-                console.log(selectAllText);
-                expect(selectAllText.trim()).toBe('Select All');
+            const selectAllText_folder = await this.page.locator('.mat-checkbox-label').first().innerText();
+            //this.page.locator('div.selectAllDiv').getByText('Select All');
+            console.log(selectAllText_folder);
+            expect(selectAllText_folder.trim()).toBe('Select All');
+          // console.log('Yes, Folder Exists !');
 
+            // Select All checkbox verification
+            const selectAllCheckbox_folder = this.page.locator('div.selectAllDiv .mat-checkbox-inner-container');
+            
+            await expect(selectAllCheckbox_folder).toBeVisible();
+            await expect(selectAllCheckbox_folder).not.toBeChecked();
+            selectAllCheckbox_folder.click();
+            await expect(selectAllCheckbox_folder).toBeChecked();
+            await this.page.waitForTimeout(1500);
 
-                //      console.log('Yes, Folder Exists !');
-                const selectAllCheckbox = this.page.locator('div.selectAllDiv .mat-checkbox-inner-container');
-
-                await expect(selectAllCheckbox).toBeVisible();
-                await expect(selectAllCheckbox).not.toBeChecked();
-                selectAllCheckbox.click();
-                await expect(selectAllCheckbox).toBeChecked();
-                await this.page.waitForTimeout(1500);
-
-
+            // Individual checkboxes verification for checked
+            const checkbox_folder = this.page.locator('.checkboxDiv input.mat-checkbox-input');
+            for (const cb of await checkbox_folder.all()) {
+                await expect(cb).toBeChecked();
             }
-            else {
-                throw new Error("No Data Available:" + error);
+
+            // Verify Generate thumbnil, Reject Image, Analyse button displayed
+            const gen_thumb_btn = this.page.locator('div.imageActionsDiv').locator('button', { hasText: 'Generate Thumbnail'});
+            await gen_thumb_btn.waitFor({state: 'visible'});
+            await expect(gen_thumb_btn).toBeVisible();
+
+            const reject_img_btn = this.page.locator('div.imageActionsDiv').locator('button', { hasText: 'Reject Images'});
+            await reject_img_btn.waitFor({state: 'visible'});
+            await expect(reject_img_btn).toBeVisible();
+
+            const analyse_btn = this.page.locator('div.imageActionsDiv').locator('button', {hasText: 'Analyse'});
+            await analyse_btn.waitFor({state: 'visible'});
+            await expect(analyse_btn).toBeVisible();
+
+            // Individual checkboxes verification for unchecked
+            selectAllCheckbox_folder.click();
+            await expect(selectAllCheckbox_folder).not.toBeChecked();
+            for (const cb of await checkbox_folder.all()) {
+                await expect(cb).not.toBeChecked();
             }
+
+            await expect(gen_thumb_btn).not.toBeVisible();
+            await expect(reject_img_btn).not.toBeVisible();
+            await expect(analyse_btn).not.toBeVisible();
+
+            await this.page.waitForTimeout(1500);
+
+            //----------END OF FOLDER LEVEL CHECKBOX VERIFICATION-----------------------
+
+            //VERIFY CHECKBOXES FOR IMAGES LEVEL
+
+            //Navigate inside first folder
+            const first_folder = this.page.locator('div.indvStudy  div.folderIconDiv').first();
+            await first_folder.click();
+            await this.page.waitForTimeout(1500);
+
+            const selectAllText_slide = await this.page.locator('.mat-checkbox-label').first().innerText();
+            //this.page.locator('div.selectAllDiv').getByText('Select All');
+            console.log(selectAllText_slide);
+            expect(selectAllText_slide.trim()).toBe('Select All');
+          // console.log('Yes, Folder Exists !');
+
+            // Select All checkbox verification
+            const selectAllCheckbox_slide = this.page.locator('div.selectAllDiv .mat-checkbox-inner-container');
+            
+            await expect(selectAllCheckbox_slide).toBeVisible();
+            await expect(selectAllCheckbox_slide).not.toBeChecked();
+            selectAllCheckbox_slide.click();
+            await expect(selectAllCheckbox_slide).toBeChecked();
+            await this.page.waitForTimeout(1500);
+
+            // Individual checkboxes verification for checked
+            const checkbox_slide = this.page.locator('.checkboxDiv input.mat-checkbox-input');
+            for (const cb of await checkbox_slide.all()) {
+                await expect(cb).toBeChecked();
+            }
+
+            // Verify Generate thumbnil, Reject Image, Analyse button displayed
+            const gen_thumb_btn_slide = this.page.locator('div.imageActionsDiv').locator('button', { hasText: 'Generate Thumbnail'});
+            await gen_thumb_btn_slide.waitFor({state: 'visible'});
+            await expect(gen_thumb_btn_slide).toBeVisible();
+
+            const reject_img_btn_slide = this.page.locator('div.imageActionsDiv').locator('button', { hasText: 'Reject Images'});
+            await reject_img_btn_slide.waitFor({state: 'visible'});
+            await expect(reject_img_btn_slide).toBeVisible();
+
+            const analyse_btn_slide = this.page.locator('div.imageActionsDiv').locator('button', {hasText: 'Analyse'});
+            await analyse_btn_slide.waitFor({state: 'visible'});
+            await expect(analyse_btn_slide).toBeVisible();
+
+            // Individual checkboxes verification for unchecked
+            selectAllCheckbox_slide.click();
+            await expect(selectAllCheckbox_slide).not.toBeChecked();
+            for (const cb of await checkbox_slide.all()) {
+                await expect(cb).not.toBeChecked();
+            }
+
+            await expect(gen_thumb_btn_slide).not.toBeVisible();
+            await expect(reject_img_btn_slide).not.toBeVisible();
+            await expect(analyse_btn_slide).not.toBeVisible();
+
+            await this.page.waitForTimeout(1500);
+        
+        }
+        else{
+            throw new Error("No Data Available:"+error);
+        }
         } catch (error) {
             throw new Error('Failed to verify checkbox: ' + error);
         }
-
-
     }
 
+    // Method to navigate inside folder
+    async navigateInsideFolder(){
+        if(await this.totalFolderInStudy()){
+        try {
+        const folder_locator = this.page.locator('div.indvStudy  div.folderIconDiv'); // // // 
+        await folder_locator.first().waitFor({ state: 'visible' });
+        await this.page.waitForTimeout(1000);
+        await folder_locator.first().click();
+        await this.page.waitForTimeout(1000);
+        } catch (error) {
+            throw new Error("Failed to navigate inside folder: "+error);
+        }
+    }
+        else{
+            throw new Error("No Data Available");
+        }
+    }
 
+    // Method to note all subject id from slides
+    private SubjectID_slides: string[] = [];
+    async noteAllSubjectIDFromSlides(){
+        try {
+        //     for(const e of this.dosage_subjectID){
+        //         const subject_id_part_slide = e.split(',')[1].trim();
+        //         this.SubjectID_slides.push(subject_id_part_slide);
+        //     }
+        //     console.log('Before Filter: All Subject IDs from slides :', Array.from(this.SubjectID_slides));
+
+            const All_dosage_subID_locator = this.page.locator('.indvImage div.imageName');
+            await All_dosage_subID_locator.first().waitFor({ state: 'visible' });
+            this.SubjectID_slides = new Array<string>();
+            for(const e of await All_dosage_subID_locator.all()){
+                const text = await e.innerText();
+                const subject_id_part = text.split(',')[1].trim();
+                this.SubjectID_slides.push(subject_id_part);
+            }
+            console.log('Before Filter: All Subject IDs from slides :', Array.from(this.SubjectID_slides));
+        }
+        catch (error) {
+            throw new Error("Failed to note all subject id from slides: "+error);
+        }
+    }
+
+    // Method to note all dosages from slides
+    private dosage: string[]=[];
+    async noteAllDosagesFromSlides(){
+        try {   
+            const All_dosage_subID_locator = this.page.locator('.indvImage div.imageName');
+            await All_dosage_subID_locator.first().waitFor({ state: 'visible' });
+            this.dosage = new Array<string>();
+            for(const e of await All_dosage_subID_locator.all()){
+                const text = await e.innerText();
+                const dosage_part = text.split(',')[0].trim();
+                this.dosage.push(dosage_part);
+            }
+            console.log('Before Filter: All Dosages from slides :', Array.from(this.dosage));
+        }
+        catch (error) {
+            throw new Error("Failed to note all dosages from slides: "+error);
+        }
+    }
+
+    //Method to open filter
+    async clickFilterIcon(){
+        try {
+            const filterButton = this.page.locator('.tabordion').locator('#section1');
+            await filterButton.click({force:true});
+            await this.page.waitForTimeout(2000);
+        } catch (error) {
+            throw new Error("Failed to open filter: "+error);
+        }
+    }
+
+    // Open Dosage dropdown
+    async openDosageDropdown(){
+        try {
+            const dosage_dd =  this.page.locator('mat-form-field').filter({hasText: 'Dosage'}).locator('mat-select');
+            await dosage_dd.click({ force: true });
+            await this.page.waitForTimeout(2000);
+        } catch (error) {
+            throw new Error("Failed to open dosage dropdown: "+error);
+        }
+            
+    }
+
+     //Method to note all dosages from dosage dropdown
+    private Dosage_options: string[] = [];
+    async noteAllDosagesFromDosageDropdown(){
+        try {
+            const Dosage_dd = await this.page.locator('mat-option .mat-option-text').allTextContents();
+            this.Dosage_options = [];
+            for(const e of Dosage_dd.map(e => e.trim())){
+                this.Dosage_options.push(e);     
+            }
+            console.log('All Dosages from Dropdown:', this.Dosage_options);
+        } catch (error) {
+            throw new Error("Failed to note all dosages from dosage dropdown: "+error);
+        }
+    }
+
+    //Method to note dosages and subject id for all slides
+    private dosage_subjectID = new Set<string>();
+    async noteDosageAndSubjectIDForAllSlides(){
+        try {
+            const Dosage_SubjectID_Locator = this.page.locator('.indvImage div.imageName');
+            this.dosage_subjectID = new Set<string>();
+            for(const e of await Dosage_SubjectID_Locator.all()){
+                const text = await e.innerText();
+                this.dosage_subjectID.add(text.trim());
+            }
+            console.log('Before Filter: All Dosages,Subject IDs from slides :', Array.from(this.dosage_subjectID));
+        }
+        catch (error) {
+            throw new Error("Failed to note dosage and subject ID for all slides: "+error);
+        }
+    }
+
+    //Method to pick two random subject IDs from slides and note them in a variable for later use in filter functionality verification
+    private randomDosage_SubjectIDsFromSlides: string[] = [];
+    async pickAnyTwoslidesDosage_SubjectID(){
+        try {
+            const shuffled = [...this.dosage_subjectID].sort(() => 0.5 - Math.random());
+            const pickedTwoElements = shuffled.slice(0, 2);
+            this.randomDosage_SubjectIDsFromSlides = pickedTwoElements;
+            console.log('Two Picked Elements:', JSON.stringify(this.randomDosage_SubjectIDsFromSlides));
+        } catch (error) {
+            throw new Error("Failed to pick any two slides' dosage and subject ID: "+error);
+        }
+    }
+
+    //DOSAGE
+    // Method to select Dosaged from picked elements
+    async selectDosageFromPickedElements(){
+        try {
+            let dosage_to_select2: string;
+            const dosage_to_select1 = this.randomDosage_SubjectIDsFromSlides[0].split(',')[0].trim();
+            console.log('Dosage to select1:', dosage_to_select1);
+
+            console.log('Length of randomDosage_SubjectIDsFromSlides array:', this.randomDosage_SubjectIDsFromSlides.length);
+            if((this.randomDosage_SubjectIDsFromSlides).length === 1){
+                this.randomDosage_SubjectIDsFromSlides.push(this.randomDosage_SubjectIDsFromSlides[0]);
+                dosage_to_select2 = this.randomDosage_SubjectIDsFromSlides[1].split(',')[0].trim();
+                console.log('Dosage to select2:1133 line', dosage_to_select2);
+            }
+            if(dosage_to_select1 === this.randomDosage_SubjectIDsFromSlides[1].split(',')[0].trim()){
+                console.log('Both dosages are same, only one dosage will be selected:', dosage_to_select1);
+                const options = await this.page.locator('mat-option').allInnerTexts();
+                console.log('OPTIONS:', options);
+                await this.page.locator(`mat-option[title="${dosage_to_select1}"]`).locator('mat-pseudo-checkbox').click({force:true});
+                await this.page.waitForTimeout(1500);
+            }
+            else{
+                console.log('selecting dosage1:', dosage_to_select1);
+                await this.page.locator(`mat-option[title="${dosage_to_select1}"]`).locator('mat-pseudo-checkbox').click({force:true});
+                dosage_to_select2 = this.randomDosage_SubjectIDsFromSlides[1].split(',')[0].trim();
+                console.log('Dosage to select2:', dosage_to_select2);
+                await this.page.locator(`mat-option[title="${dosage_to_select2}"]`).locator('mat-pseudo-checkbox').click({force:true}); //2nd dosage selection
+                await this.page.waitForTimeout(1500);
+            }
+        } catch (error) {
+            throw new Error("Failed to select dosage from picked elements: "+error);
+        }
+    }
+
+    //SUBJECT ID
+    // Method to select Subject ID from picked elements
+    async selectSubjectIdFromPickedElements(){
+        try {
+            let subjectID_to_select2: string;
+            const subjectID_to_select1 = this.randomDosage_SubjectIDsFromSlides[0].split(',')[1].trim();
+            console.log('Subject ID to select1:', subjectID_to_select1);
+            if((this.randomDosage_SubjectIDsFromSlides).length === 1){
+                this.randomDosage_SubjectIDsFromSlides.push(this.randomDosage_SubjectIDsFromSlides[0]);
+                subjectID_to_select2 = this.randomDosage_SubjectIDsFromSlides[1].split(',')[1].trim();
+                console.log('Subject ID to select2:', subjectID_to_select2);
+            }
+            console.log('1164: ', this.randomDosage_SubjectIDsFromSlides[1].split(',')[1].trim());
+            if(subjectID_to_select1 === this.randomDosage_SubjectIDsFromSlides[1].split(',')[1].trim()){
+                console.log('1166: ', this.randomDosage_SubjectIDsFromSlides[1].split(',')[1].trim());
+                console.log('Both Subject IDs are same, only one Subject ID will be selected:', subjectID_to_select1);
+                await this.page.locator(`mat-option[title="${subjectID_to_select1}"]`).locator('mat-pseudo-checkbox').click({force:true});
+                await this.page.waitForTimeout(1500);
+            }
+            else{
+                console.log('selecting Subject ID1:', subjectID_to_select1);
+                await this.page.locator(`mat-option[title="${subjectID_to_select1}"]`).locator('mat-pseudo-checkbox').click({force:true});
+                subjectID_to_select2 = this.randomDosage_SubjectIDsFromSlides[1].split(',')[1].trim();
+                console.log('selecting Subject ID2:', subjectID_to_select2);
+                await this.page.locator(`mat-option[title="${subjectID_to_select2}"]`).locator('mat-pseudo-checkbox').click({force:true});
+                await this.page.waitForTimeout(1500);
+            }
+        } catch (error) {
+            throw new Error("Failed to select subject ID from picked elements: "+error);
+        }
+    }
+
+    // Open Subject ID dropdown
+    async openSubjectIDDropdown(){
+        try {
+            const SubjectID_options =  this.page.locator('mat-form-field').filter({hasText: 'Subject ID'}).locator('mat-select');
+            await SubjectID_options.click({ force: true });
+            await this.page.waitForTimeout(1500);
+        }
+        catch (error) {
+            throw new Error("Failed to open subject ID dropdown: "+error);
+        }
+    }
+
+      //Method to note all subject Ids from Subject Id dropdown
+    private SubjectID_options: string[] = [];
+    async noteAllSubjectIDFromSubjectIDDropdown(){
+        try {
+            const SubjectID_dd = await this.page.locator('mat-option .mat-option-text').allTextContents();
+            this.SubjectID_options = [];
+            for(const e of SubjectID_dd.map(e => e.trim())){
+                this.SubjectID_options.push(e);     
+            }
+            console.log('All Subject IDs from Dropdown:', this.SubjectID_options);
+        } catch (error) {
+            throw new Error("Failed to note all subject IDs from subject ID dropdown: "+error);
+        }
+    }
+
+     // Method to validate dropdown dosage values and slide dosage values are matched
+    async verifyDosageValuesMatched(){
+        try {
+            const matchedValues = Array.from(this.dosage).filter(value => this.Dosage_options.includes(value));
+            console.log('Before Filter: Matched Dosage Values:', matchedValues);
+        }
+        catch (error) {
+            throw new Error("Failed to verify dosage values matched: "+error);
+        }
+    }
+
+    //Method to validate dropdown subject id values and slide subject id values are matched
+    async verifySubjectIDValuesMatched(){
+        try {
+            const matchedSubjectIDs = this.SubjectID_slides.filter(value => this.SubjectID_options.includes(value));
+            console.log('Before Filter: Matched Subject IDs:', matchedSubjectIDs);
+        } catch (error) {
+            throw new Error("Failed to verify subject ID values matched: "+error);
+        }       
+    }
+
+    // MEthod to validate Subject IDfilter is working as per expectations
+    private filteredSubjectID: String[] = [];
+    async verifySubjectIDFilterFunctionality(){
+        try {
+            await this.page.waitForTimeout(1500);
+
+            await this.page.waitForTimeout(1500);
+            const first_dosage = this.page.locator('mat-option').last().locator('mat-pseudo-checkbox'); // select option
+
+            await first_dosage.click({force:true});
+
+            await this.page.locator('mat-option').first().locator('mat-pseudo-checkbox').click({force:true}); // select option
+
+            await this.page.waitForTimeout(1500);
+
+            this.page.locator('.tabordion').locator('#section1').click({force:true}); //Close filter
+
+            await this.page.waitForTimeout(1500);
+          
+            await this.page.getByRole('button', { name: 'Apply' }).click({ force: true });
+
+            await this.page.waitForTimeout(1500);
+
+            await this.page.getByRole('button', { name: 'Apply' }).click({ force: true });
+
+            await this.page.waitForTimeout(2500);
+            
+            console.log("-----------------------------");
+
+            const filtered_subID = this.filteredSubjectID = (await this.page.locator('.indvImage div.imageName').allTextContents()).map(v => v.split(',')[1].trim());
+
+            console.log('After Filter: Filtered Subject IDs from slide :', Array.from(this.filteredSubjectID));
+
+            const valueSelectedSubjectID = await this.page.locator('.galleryHeaderFilterPopOverRowDiv .mat-select-min-line').nth(1).allInnerTexts();
+            console.log('Value selected from subject ID dropdown filter:', valueSelectedSubjectID);
+
+            const valueSelectedSubjectID_splitValues = (await this.page.locator('.galleryHeaderFilterPopOverRowDiv .mat-select-min-line').nth(1).allInnerTexts()).flatMap(text =>text.split(',').map(v => v.trim().toLowerCase()));
+
+            for(const subjectID of this.filteredSubjectID){
+                 const normalizedSubjectID = subjectID.trim().toLowerCase();
+                console.log(`Filtered Subject ID: ${normalizedSubjectID}`);
+                //console.log(`Filtered Subject ID: ${subjectID}`);
+                expect(valueSelectedSubjectID_splitValues,`Expected selected filter values [${valueSelectedSubjectID_splitValues.join(', ')}]to contain filtered subject ID "${normalizedSubjectID}"`).toContain(normalizedSubjectID);
+            }
+
+        } catch (error) {
+            throw new Error("Failed to verify subject ID filter functionality: "+error);
+        }
+    }
+
+    // Method to validate Dosage filter is working as per expectations
+    //Dosage Filter
+    private filteredDosage: String[] = [];
+    async verifyDosageFilterFunctionality(){
+        try {
+            await this.page.waitForTimeout(1500);
+            await this.page.waitForTimeout(1500);
+            const first_dosage = this.page.locator('mat-option').last().locator('mat-pseudo-checkbox'); // select option
+            await first_dosage.click({force:true});
+            await this.page.locator('mat-option').first().locator('mat-pseudo-checkbox').click({force:true}); // select option
+            await this.page.waitForTimeout(1500);
+            this.page.locator('.tabordion').locator('#section1').click({force:true}); //Close filter
+            await this.page.waitForTimeout(1500);
+            await this.page.getByRole('button', { name: 'Apply' }).click({ force: true });
+            await this.page.waitForTimeout(1500);
+            await this.page.getByRole('button', { name: 'Apply' }).click({ force: true });
+
+            await this.page.waitForTimeout(2500);
+            
+            console.log("-----------------------------");
+            
+            const filtered_dosage = this.filteredDosage = (await this.page.locator('.indvImage div.imageName').allTextContents()).map(v => v.split(',')[0].trim());
+
+            console.log('After Filter: Filtered Dosage from slide :', Array.from(this.filteredDosage));
+
+            const valueSelectedDosage = await this.page.locator('.galleryHeaderFilterPopOverRowDiv .mat-select-min-line').first().allInnerTexts();
+            console.log('Value selected from dosage dropdown filter:', valueSelectedDosage);
+
+            const valueSelectedDosage_splitValues = (await this.page.locator('.galleryHeaderFilterPopOverRowDiv .mat-select-min-line').first().allInnerTexts()).flatMap(text =>text.split(',').map(v => v.trim().toLowerCase()));
+
+            for(const dosage of this.filteredDosage){
+                 const normalizedDosage = dosage.trim().toLowerCase();
+                console.log(`Filtered dosage: ${normalizedDosage}`);
+                //console.log(`Filtered dosage: ${dosage}`);
+                expect(valueSelectedDosage_splitValues,`Expected selected filter values [${valueSelectedDosage_splitValues.join(', ')}]to contain filtered dosage "${normalizedDosage}"`).toContain(normalizedDosage);
+            }
+        } catch (error) {
+            throw new Error("Failed to verify filter functionality: "+error);
+        }
+    }
+
+    // Method to verify Dosage and Subject ID filter in combination
+    async validateDosageAndSubjectIDFilter(){
+        try {
+            console.log('-----------------------------');
+            await this.page.getByRole('button', { name: 'Apply' }).click({ force: true });
+            await this.page.waitForTimeout(2500);
+
+            const filtered_dosage = this.filteredDosage = (await this.page.locator('.indvImage div.imageName').allTextContents()).map(v => v.split(',')[0].trim());
+            console.log('After Filter: Filtered Dosage from slide :', Array.from(this.filteredDosage));
+            const valueSelectedDosage = await this.page.locator('.galleryHeaderFilterPopOverRowDiv .mat-select-min-line').first().allInnerTexts();
+            console.log('Value selected from dosage dropdown filter:', valueSelectedDosage);
+            const valueSelectedDosage_splitValues = (await this.page.locator('.galleryHeaderFilterPopOverRowDiv .mat-select-min-line').first().allInnerTexts()).flatMap(text =>text.split(',').map(v => v.trim().toLowerCase()));
+
+            for(const dosage of this.filteredDosage){
+                 const normalizedDosage = dosage.trim().toLowerCase();
+                console.log(`Filtered dosage: ${normalizedDosage}`);
+                //console.log(`Filtered dosage: ${dosage}`);
+                expect(valueSelectedDosage_splitValues,`Expected selected filter values [${valueSelectedDosage_splitValues.join(', ')}]to contain filtered dosage "${normalizedDosage}"`).toContain(normalizedDosage);
+            }
+            console.log('-----------------------------');
+            const filtered_subID = this.filteredSubjectID = (await this.page.locator('.indvImage div.imageName').allTextContents()).map(v => v.split(',')[1].trim());
+
+            console.log('After Filter: Filtered Subject IDs from slide :', Array.from(this.filteredSubjectID));
+
+            const valueSelectedSubjectID = await this.page.locator('.galleryHeaderFilterPopOverRowDiv .mat-select-min-line').nth(1).allInnerTexts();
+            console.log('Value selected from subject ID dropdown filter:', valueSelectedSubjectID);
+
+            const valueSelectedSubjectID_splitValues = (await this.page.locator('.galleryHeaderFilterPopOverRowDiv .mat-select-min-line').nth(1).allInnerTexts()).flatMap(text =>text.split(',').map(v => v.trim().toLowerCase()));
+
+            for(const subjectID of this.filteredSubjectID){
+                 const normalizedSubjectID = subjectID.trim().toLowerCase();
+                console.log(`Filtered Subject ID: ${normalizedSubjectID}`);
+                //console.log(`Filtered Subject ID: ${subjectID}`);
+                expect(valueSelectedSubjectID_splitValues,`Expected selected filter values [${valueSelectedSubjectID_splitValues.join(', ')}]to contain filtered subject ID "${normalizedSubjectID}"`).toContain(normalizedSubjectID);
+            }
+
+        } catch (error) {
+            throw new Error("Failed to verify dosage and subject ID filter in combination: "+error);
+        }
+    }
+
+    // Method to open subject id dropdown in filter
+    async openSubjectIDDropdownInFilter(){
+        try {
+            await this.page.locator('.tabordion').locator('#section1').click({force:true});
+            const SubjectID_options =  this.page.locator('mat-form-field').filter({hasText: 'Subject ID'}).locator('mat-select');
+            await SubjectID_options.click({ force: true });
+            await this.page.waitForTimeout(1500);
+        } catch (error) {
+            throw new Error("Failed to open subject ID dropdown in filter: "+error);
+        }
+    }
+
+    async clickEditOption(){
+        try {
+            const editOption = this.page.locator('button.mat-menu-item', { hasText: 'Edit' });
+            await editOption.click();
+        }
+        catch (error) {
+            throw new Error('Failed to click on edit option: ' + error);
+        }
+    }
+    async verifyEditStudyFields(field: string){
+         try {
+            const escaped = field.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const locator = this.page.locator('mat-label').filter({hasText: new RegExp(`^${escaped}\\s*\\*?$`, 'i')});
+            await expect(locator).toBeVisible({ visible: true });
+        } catch (error) {
+            throw new Error('Failed to verify left panel section: ' + error);
+        }
+    }
+
+   async fieldIsEditable(field: string, value: string) {
+    const label = this.page.locator('mat-label', { hasText: field });
+    if (await label.isVisible()) {
+        await label.fill(value);
+    }
+    else {
+        console.log(`Field "${field}" is not visible.`);
+    }
+}
+
+    async dropdownisEditable(field: string){
+        const dropdown = this.page.locator("//mat-select[@formcontrolname='" + field + "']");
+        if (await dropdown.isVisible()) {
+            await dropdown.click();
+            await this.page.waitForTimeout(1000);
+            await this.listbox.first().click();
+        }
+    }
+
+    async editStudyDetails(){
+        await this.fieldIsEditable('Project No.', "Project123");
+        await this.fieldIsEditable('Accession No.', "Accession123");
+        await this.fieldIsEditable('Sacrifice', "Sacrifice123");
+        await this.fieldIsEditable('CRO', "CRO123");
+        await this.fieldIsEditable('Test Item', "Test123");
+
+        await this.dropdownisEditable('species');
+        await this.dropdownisEditable('studyDomain');
+        await this.dropdownisEditable('treatment');
+
+}
+
+    async navigateToAnalysis(){
+        await this.analysis.click();
+    }
+
+    async verifyTabs(tabs: string){
+        try {
+            const locator = this.page.locator("//div[@class='mat-tab-label-content' and normalize-space()='" + tabs + "']");
+            await expect(locator).toBeVisible({visible: true, timeout: 500});
+        } catch (error) {
+            throw new Error('Failed to verify columns: ' + error);
+        }
+    }
+
+    async clickDeleteOption(){
+        try {
+            const deleteOption = this.page.locator('button.mat-menu-item', { hasText: 'Delete' });
+            await deleteOption.click();
+        }
+        catch (error) {
+            throw new Error('Failed to click on delete option: ' + error);
+        }
+    }
+
+    async clickSyncImagesOption(){
+        try {
+            const syncImagesOption = this.page.locator('button.mat-menu-item', { hasText: 'Sync Images' });
+            await syncImagesOption.click();
+        }
+        catch (error) {
+            throw new Error('Failed to click on sync images option: ' + error);
+        }
+    }
+
+    async verifyDelete(){
+        await this.deleteButton.click();
+    }
+
+    async clickTab(tab: string){
+       try {
+            const locator = this.page.locator("//div[@class='mat-tab-label-content' and normalize-space()='" + tab + "']");
+            await expect(locator).toBeVisible({visible: true, timeout: 500});
+            await locator.click();
+        } catch (error) {
+            throw new Error('Failed to verify columns: ' + error);
+        }
+    }
+
+    async saveAndExit(){
+        await this.saveExitButton.click();
+    }
 }
 
