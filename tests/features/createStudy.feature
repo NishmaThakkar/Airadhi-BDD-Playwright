@@ -15,5 +15,6 @@ Scenario Outline: Create a study with multiple slides having different tissues f
 
 Examples:
 |Template_Name | Excel_File_Path  |
-| 15Fields  | 1AnimalID6organs.csv |
+| 15Fields  | 1AnimalID9organs.csv |
 
+await page.getByRole('button', { name: 'Next' }).click();

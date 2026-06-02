@@ -46,21 +46,64 @@ export class TechnicianPage {
         }
     }
 
+    //Method to enter study details and create study when all data configuration is enabled
     async enterStudyDetails() {
-        await this.page.locator('div').filter({ hasText: /^Study title$/ }).nth(3).click();
-        await this.page.getByRole('textbox', { name: 'Study title' }).fill('Study1');
-        await this.page.getByRole('textbox', { name: 'Study title' }).press('Tab');
-        await this.page.getByRole('textbox', { name: 'Project No.' }).fill('Proj-09');
-        await this.page.getByRole('textbox', { name: 'Project No.' }).press('Tab');
-        await this.page.getByRole('textbox', { name: 'Project No.' }).click();
-        await this.page.locator('div').filter({ hasText: /^Study Administrator\*$/ }).nth(3).click();
-        await this.page.getByText('Nishma Thakkar', { exact: true }).click();
-        await expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden();
-        await this.page.locator('div').filter({ hasText: /^Pathologist\*$/ }).nth(3).click();
-        await this.page.getByRole('option', { name: 'Nishma Thakkar' }).click();
-        await expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden()
-        await this.page.locator('div').filter({ hasText: /^Species \*$/ }).nth(3).click();
-        await this.page.getByText('Mice').click();
+
+    await this.page.locator('div').filter({ hasText: /^Study No\.\*$/ }).nth(3).click();
+    await this.page.getByRole('textbox', { name: 'Study No.*' }).fill('9organ1Animal');
+    await this.page.locator('div').filter({ hasText: /^Study title$/ }).nth(3).click();
+    await this.page.getByRole('textbox', { name: 'Study title' }).fill('test');
+    await this.page.locator('div').filter({ hasText: /^Project No\.$/ }).nth(3).click();
+    await this.page.getByRole('textbox', { name: 'Project No.' }).fill('Proj-3');
+    await this.page.locator('div').filter({ hasText: /^Accession No\.$/ }).first().click();
+    await this.page.getByRole('textbox', { name: 'Accession No.' }).fill('00');
+    await this.page.locator('div').filter({ hasText: /^Study Administrator\*$/ }).nth(3).click();
+    await this.page.getByText('Nishma Thakkar', { exact: true }).click();
+    await this.page.locator('div').filter({ hasText: /^Pathologist\*$/ }).nth(3).click();
+    await this.page.locator('#mat-option-33').getByText('Nishma Thakkar').click();
+    await this.page.locator('div').filter({ hasText: /^Peer Reviewer$/ }).nth(3).click();
+    await this.page.locator('#mat-option-57').getByText('Nishma Thakkar').click();
+    await this.page.getByText('Suyog').click();
+    await this.page.locator('div').filter({ hasText: /^Study Domain$/ }).nth(3).click();
+    await this.page.getByText('Pre-Clinical').click();
+    await this.page.locator('div').filter({ hasText: /^Treatment$/ }).nth(3).click();
+    await this.page.getByText('Treatement-test').click();
+    await this.page.getByText('From–Duration').click();
+    await this.page.getByRole('button', { name: 'Open calendar' }).click();
+    await this.page.getByRole('button', { name: 'May 4,' }).click();
+    await this.page.getByRole('button', { name: 'May 11,' }).click();
+    await this.page.getByRole('textbox', { name: 'Sacrifice' }).click();
+    await this.page.locator('div').filter({ hasText: /^Sacrifice$/ }).nth(3).click();
+    await this.page.getByRole('textbox', { name: 'Sacrifice' }).click();
+    await this.page.getByRole('textbox', { name: 'Sacrifice' }).fill('NA');
+    await this.page.locator('div').filter({ hasText: /^Species \*$/ }).nth(3).click();
+    await this.page.getByText('Mice').click();
+    await this.page.getByRole('textbox', { name: 'Strain' }).click();
+    await this.page.getByRole('textbox', { name: 'Strain' }).fill('122');
+    await this.page.locator('div').filter({ hasText: /^CRO$/ }).nth(3).click();
+    await this.page.getByRole('textbox', { name: 'CRO' }).fill('222');
+    await this.page.locator('.mat-select-placeholder').first().click();
+    await this.page.getByText('Nasal').click();
+    await this.page.locator('div').filter({ hasText: /^Test Item$/ }).nth(3).click();
+    await this.page.getByRole('textbox', { name: 'Test Item' }).fill('teat');
+    await this.page.locator('div').filter({ hasText: /^Additional Pathologists$/ }).nth(3).click();
+    await this.page.getByText('Vinayak Londhe').click();
+    await this.page.locator('.cdk-overlay-backdrop').click();
+    await this.page.locator('.mat-checkbox-inner-container').click();
+       // await this.page.locator('div').filter({ hasText: /^Study title$/ }).nth(3).click();
+        // await this.page.getByRole('textbox', { name: 'Study title' }).fill('Study1');
+        // await this.page.getByRole('textbox', { name: 'Study title' }).press('Tab');
+        // await this.page.getByRole('textbox', { name: 'Project No.' }).fill('Proj-09');
+        // await this.page.getByRole('textbox', { name: 'Project No.' }).press('Tab');
+        // await this.page.getByRole('textbox', { name: 'Project No.' }).click();
+        // await this.page.locator('div').filter({ hasText: /^Study Administrator\*$/ }).nth(3).click();
+        // await this.page.getByText('Nishma Thakkar', { exact: true }).click();
+        // await expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden();
+        // await this.page.locator('div').filter({ hasText: /^Pathologist\*$/ }).nth(3).click();
+        // await this.page.getByRole('option', { name: 'Nishma Thakkar' }).click();
+        // await expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden()
+        // await this.page.locator('div').filter({ hasText: /^Species \*$/ }).nth(3).click();
+        // await this.page.getByText('Mice').click();
 
     }
     // Method to verify left panel sections

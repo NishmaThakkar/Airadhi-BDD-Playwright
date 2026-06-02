@@ -42,16 +42,16 @@ Before(async function () {
       throw new Error('Invalid browser');
   }
 
-  const browser = await browserType.launch({
-    headless: project.use?.headless ?? false,
-  });
+const browser = await browserType.launch({
+  headless: false,
+  args: ['--start-maximized']
+});
+const context = await browser.newContext({
+  viewport: null
+});
 
-  const context = await browser.newContext({
-    ...project.use,
-  });
 
   const page = await context.newPage();
-
   this.page = page;
   this.browser = browser;
 });

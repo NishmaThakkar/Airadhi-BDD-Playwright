@@ -12,6 +12,7 @@ retries:2,
 
      baseURL: 'https://airadhi-merck-uat.airamatrix.in/AIRADHI/login',
     trace: 'on-first-retry',
+       headless: false,
   },
 
   /* Configure projects for major browsers */
@@ -19,10 +20,13 @@ retries:2,
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'],
+           ignoreHTTPSErrors: true,//,
+        //  viewport: null,
+           
        },
     },
     {
-      name: 'firefox',
+      name: '  headless: false,',
       use: { ...devices['Desktop Firefox'] },
     },
     {
