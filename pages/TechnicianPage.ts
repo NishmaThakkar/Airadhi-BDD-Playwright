@@ -1,7 +1,6 @@
 import { Page, expect } from '@playwright/test';
 import { error } from 'console';
-
-
+import { faker } from '@faker-js/faker';
 
 export class TechnicianPage {
 
@@ -12,20 +11,20 @@ export class TechnicianPage {
     private deleteButton;
     private threeDotsButton;
     private study_number: string = '';
+    private repo_name: string = '';
+    private saveExitButton;
 
     constructor(private page: Page) {
 
         this.folder = this.page.locator("//mat-icon[@svgicon='folderSvgIcon']");
         this.studyField = this.page.locator('mat-label');
         this.listbox = this.page.locator("//div[@role='listbox']//mat-option");
-        this.analysis = this.page.getByText('Analysis');
+        this.analysis = this.page.locator('p', { hasText: 'Analysis' });
         this.deleteButton = this.page.locator("//button[text()='Delete']");
         this.threeDotsButton = this.page.locator('tr.expandable-element-row').first().locator('.mat-menu-trigger');
+        this.saveExitButton = this.page.locator("//button//span[contains(text(),'Save & Exit')]");
      }
-    private repo_name: string = '';
-    //  private study_number: string = '';
-
-
+    
     async loginTechnician() {
         await this.page.goto('http://airadhi-qc-internal.airamatrix.in/');
         await this.page.getByRole('textbox', { name: 'Email ID' }).fill("nishma.thakkar@airamatrix.com");
@@ -65,18 +64,17 @@ export class TechnicianPage {
     }
 
     async enterStudyDetails() {
+        await this.page.getByRole('textbox', { name: 'Study No.' }).fill(faker.string.alphanumeric(8));
+   //     await this.page.getByRole('textbox', { name: 'Study No.' }).fill(faker.string.alphanumeric(8));
         await this.page.locator('div').filter({ hasText: /^Study title$/ }).nth(3).click();
         await this.page.getByRole('textbox', { name: 'Study title' }).fill('Study1');
-        await this.page.getByRole('textbox', { name: 'Study title' }).press('Tab');
         await this.page.getByRole('textbox', { name: 'Project No.' }).fill('Proj-09');
-        await this.page.getByRole('textbox', { name: 'Project No.' }).press('Tab');
         await this.page.getByRole('textbox', { name: 'Project No.' }).click();
-        await this.page.locator('div').filter({ hasText: /^Study Administrator\*$/ }).nth(3).click();
-        await this.page.getByText('Nishma Thakkar', { exact: true }).click();
-        await expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden();
+        await this.page.locator('div').filter({ hasText: /^Study Director\*$/ }).nth(1).click();
+        await this.listbox.first().click();
         await this.page.locator('div').filter({ hasText: /^Pathologist\*$/ }).nth(3).click();
-        await this.page.getByRole('option', { name: 'Nishma Thakkar' }).click();
-        await expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden()
+        await this.listbox.first().click();
+      //  await expect(this.page.getByRole('option', { name: 'Nishma Thakkar' })).toBeHidden()
         await this.page.locator('div').filter({ hasText: /^Species \*$/ }).nth(3).click();
         await this.page.getByText('Mice').click();
 
@@ -145,7 +143,6 @@ export class TechnicianPage {
         const plusIcon = createStudyBtn.locator('i.fa.fa-plus');
         await expect(plusIcon).toBeVisible({ timeout: 5000 });
     }
-
 
     // Method to verify study table columns
     async verifyStudyTableColumn(column: string) {
@@ -1368,24 +1365,15 @@ export class TechnicianPage {
     async verifyDosageFilterFunctionality(){
         try {
             await this.page.waitForTimeout(1500);
-
             await this.page.waitForTimeout(1500);
             const first_dosage = this.page.locator('mat-option').last().locator('mat-pseudo-checkbox'); // select option
-
             await first_dosage.click({force:true});
-
             await this.page.locator('mat-option').first().locator('mat-pseudo-checkbox').click({force:true}); // select option
-
             await this.page.waitForTimeout(1500);
-
             this.page.locator('.tabordion').locator('#section1').click({force:true}); //Close filter
-
             await this.page.waitForTimeout(1500);
-          
             await this.page.getByRole('button', { name: 'Apply' }).click({ force: true });
-
             await this.page.waitForTimeout(1500);
-
             await this.page.getByRole('button', { name: 'Apply' }).click({ force: true });
 
             await this.page.waitForTimeout(2500);
@@ -1413,21 +1401,16 @@ export class TechnicianPage {
     }
 
     // Method to verify Dosage and Subject ID filter in combination
-    
     async validateDosageAndSubjectIDFilter(){
         try {
             console.log('-----------------------------');
             await this.page.getByRole('button', { name: 'Apply' }).click({ force: true });
-
             await this.page.waitForTimeout(2500);
 
             const filtered_dosage = this.filteredDosage = (await this.page.locator('.indvImage div.imageName').allTextContents()).map(v => v.split(',')[0].trim());
-
             console.log('After Filter: Filtered Dosage from slide :', Array.from(this.filteredDosage));
-
             const valueSelectedDosage = await this.page.locator('.galleryHeaderFilterPopOverRowDiv .mat-select-min-line').first().allInnerTexts();
             console.log('Value selected from dosage dropdown filter:', valueSelectedDosage);
-
             const valueSelectedDosage_splitValues = (await this.page.locator('.galleryHeaderFilterPopOverRowDiv .mat-select-min-line').first().allInnerTexts()).flatMap(text =>text.split(',').map(v => v.trim().toLowerCase()));
 
             for(const dosage of this.filteredDosage){
@@ -1436,9 +1419,7 @@ export class TechnicianPage {
                 //console.log(`Filtered dosage: ${dosage}`);
                 expect(valueSelectedDosage_splitValues,`Expected selected filter values [${valueSelectedDosage_splitValues.join(', ')}]to contain filtered dosage "${normalizedDosage}"`).toContain(normalizedDosage);
             }
-
-                console.log('-----------------------------');
-
+            console.log('-----------------------------');
             const filtered_subID = this.filteredSubjectID = (await this.page.locator('.indvImage div.imageName').allTextContents()).map(v => v.split(',')[1].trim());
 
             console.log('After Filter: Filtered Subject IDs from slide :', Array.from(this.filteredSubjectID));
@@ -1480,7 +1461,6 @@ export class TechnicianPage {
         catch (error) {
             throw new Error('Failed to click on edit option: ' + error);
         }
-
     }
     async verifyEditStudyFields(field: string){
          try {
@@ -1490,7 +1470,6 @@ export class TechnicianPage {
         } catch (error) {
             throw new Error('Failed to verify left panel section: ' + error);
         }
-
     }
 
    async fieldIsEditable(field: string, value: string) {
@@ -1501,8 +1480,16 @@ export class TechnicianPage {
     else {
         console.log(`Field "${field}" is not visible.`);
     }
-    
 }
+
+    async dropdownisEditable(field: string){
+        const dropdown = this.page.locator("//mat-select[@formcontrolname='" + field + "']");
+        if (await dropdown.isVisible()) {
+            await dropdown.click();
+            await this.page.waitForTimeout(1000);
+            await this.listbox.first().click();
+        }
+    }
 
     async editStudyDetails(){
         await this.fieldIsEditable('Project No.', "Project123");
@@ -1511,19 +1498,11 @@ export class TechnicianPage {
         await this.fieldIsEditable('CRO', "CRO123");
         await this.fieldIsEditable('Test Item', "Test123");
 
-        await this.page.locator("//mat-select[@formcontrolname='species']").click();
-        await this.page.waitForTimeout(1000);
-        await this.listbox.first().click();
+        await this.dropdownisEditable('species');
+        await this.dropdownisEditable('studyDomain');
+        await this.dropdownisEditable('treatment');
 
-        await this.page.locator("//mat-select[@formcontrolname='studyDomain']").click();
-        await this.page.waitForTimeout(1000);
-        await this.listbox.first().click();
-
-        await this.page.locator("//mat-select[@formcontrolname='treatment']").click();
-        await this.page.waitForTimeout(1000);
-        await this.listbox.first().click();
-    
-    }
+}
 
     async navigateToAnalysis(){
         await this.analysis.click();
@@ -1560,6 +1539,20 @@ export class TechnicianPage {
 
     async verifyDelete(){
         await this.deleteButton.click();
+    }
+
+    async clickTab(tab: string){
+       try {
+            const locator = this.page.locator("//div[@class='mat-tab-label-content' and normalize-space()='" + tab + "']");
+            await expect(locator).toBeVisible({visible: true, timeout: 500});
+            await locator.click();
+        } catch (error) {
+            throw new Error('Failed to verify columns: ' + error);
+        }
+    }
+
+    async saveAndExit(){
+        await this.saveExitButton.click();
     }
 }
 

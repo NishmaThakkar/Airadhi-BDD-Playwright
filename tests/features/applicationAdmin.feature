@@ -83,12 +83,12 @@ Scenario: Admin can access User Panel and verify UI
 # Then User should see tabs:
   Then Admin should see search box
   When Admin clicks on Create User button and fills the details
-  When Admin clicks on Save button
+  When Admin clicks on Save button for user
   Then Admin should see success message of user creation
   When Admin clicks on Inactive Tab
   Then Admin should see the created user in Inactive tab
   When Admin clicks on Create User button and fills the details
-  When Admin clicks on Save button
+  When Admin clicks on Save button for user
   Then Admin should see error message of duplicate user creation
   
   @deactivateusers
@@ -111,5 +111,5 @@ Scenario: Admin can edit user details
   Given Admin is on User Panel
   Then Admin should see search box
   When Admin clicks on Edit button of a user and updates the details
-  When Admin clicks on Save button
+  When Admin clicks on Save button for user
  # Then Admin should see success message of user update

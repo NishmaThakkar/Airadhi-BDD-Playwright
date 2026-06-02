@@ -74,7 +74,7 @@ export class ApplicationAdmin {
         this.routeToggleButton = this.page.locator("//mat-label[contains(text(),'Route')]/following-sibling::mat-slide-toggle");
         this.croToggleButton = this.page.locator("//mat-label[contains(text(),'CRO')]/following-sibling::mat-slide-toggle");
         this.testToggleButton = this.page.locator("//mat-label[contains(text(),'Test Item')]/following-sibling::mat-slide-toggle");
-        this.btnSave = this.page.locator("button").getByText('Save');
+        this.btnSave = this.page.locator("//button[contains(text(),'Save')]");
         this.successMessage = this.page.locator("//div[contains(@class,'snackBarMsg')]"); 
         this.addConfigButton = this.page.locator("button").getByText('add');
         this.addButton = this.page.locator("xpath=//div[@class='editableRow']//mat-icon[@title='Add Configuration']");
@@ -343,5 +343,41 @@ export class ApplicationAdmin {
 
     async verifySearchBox() {
         await expect(this.searchBox).toBeVisible();
+    }
+
+    async enableAllToggles() {
+        try{
+        const toggles = [
+            this.projectToggleButton,
+            this.accessionToggleButton,
+            this.peerToggleButton,
+            this.additionalToggleButton,
+            this.studyToggleButton,
+            this.treatmentToggleButton,
+            this.durationToggleButton,
+            this.sacrificeToggleButton,
+            this.routeToggleButton,
+            this.croToggleButton,
+            this.testToggleButton
+        ];
+        for (const toggle of toggles) {
+            const isChecked = (await toggle.getAttribute('class'))?.includes('mat-checked');
+            if (!isChecked) {               
+                await expect(toggle).toBeVisible();
+                await toggle.click();
+                await expect(toggle).toContainClass('mat-checked');
+            }
+        }
+        const className = await this.btnSave.getAttribute('class');
+        const isDisabled = className?.includes('disablebtn_func');
+
+        if (!isDisabled) {
+            await this.btnSave.click();
+            await this.verifySuccessMessage(' Configuration Added Successfully ');
+        }
+    }
+    catch(error){
+        throw new Error('Error enabling toggles: ' + error);    
+    }
     }
 }

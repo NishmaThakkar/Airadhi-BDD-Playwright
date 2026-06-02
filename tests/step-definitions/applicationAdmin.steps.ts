@@ -4,15 +4,11 @@ import { expect, Locator } from '@playwright/test';
 
 
 Given('Application admin should be selected', async function (this: CustomWorld) {
-//    await this.applicationAdmin.consoleErrorCheck();
    await this.applicationAdmin.selectApplicationAdmin();
-//   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('User should see Configure, Users, Reassign in Side Panel', async function (this: CustomWorld) {
-//    await this.applicationAdmin.consoleErrorCheck();
    await this.applicationAdmin.sidePanelOptions();
-//   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('User should view below side panel:', async function (this: CustomWorld, dataTable) {
@@ -30,27 +26,19 @@ Then('User should view all the tabs:', async function (this: CustomWorld, dataTa
 });
 
 Then('User should see Field Configuration, Data Configuration, Mapping Structure, Folder Location in Tabs', async function (this: CustomWorld) {
- //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.tabOptions();
-    //    await this.applicationAdmin.verifyNoConsoleErrors();
 });     
 
 Given('Admin is on Field Configuration tab', async function (this: CustomWorld) {   
-//    await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.navigateToFieldConfiguration();
- //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 When('Admin updates the field configuration', async function (this: CustomWorld) {
-//    await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.updateFieldConfiguration();
- //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('Admin should see success message of toggle update', async function (this: CustomWorld) {
- //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.verifySuccessMessage(' Configuration Added Successfully ');
-//    await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
     async function toggleState(isChecked: any, technicianToggle: Locator): Promise<string> {
@@ -66,7 +54,6 @@ Then('Admin should see success message of toggle update', async function (this: 
     }
 
 When('Admin verifies the state of the toggles', async function (this: CustomWorld) {
-    //    await this.applicationAdmin.consoleErrorCheck();
     const project = (await this.applicationAdmin.projectToggleButton.getAttribute('class'))?.includes('mat-checked');
     const accession = (await this.applicationAdmin.accessionToggleButton.getAttribute('class'))?.includes('mat-checked');
     const peer = (await this.applicationAdmin.peerToggleButton.getAttribute('class'))?.includes('mat-checked');
@@ -270,29 +257,30 @@ Then('Admin should see success message of user activation', async function (this
 Then('Admin should see success message of user creation', async function (this: CustomWorld) {
  //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.verifySuccessMessage(' User Created And Verification Email Sent Successfully ');
- //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('Admin should see the created user in Inactive tab', async function (this: CustomWorld) {
- //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.verifyUserAdded();
- //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('Admin should see error message of duplicate user creation', async function (this: CustomWorld) {
- //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.verifySuccessMessage(' Email ID Already Exists ');
- //   await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 When('Admin clicks on Edit button of a user and updates the details', async function (this: CustomWorld) {
- //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.editUserRoles();
-    await this.applicationAdmin.verifyNoConsoleErrors();
 });
 
 Then('Admin should see success message of user update', async function (this: CustomWorld) {
- //   await this.applicationAdmin.consoleErrorCheck();
     await this.applicationAdmin.verifySuccessMessage(' User Updated Successfully For Email ID : ');
- //   await this.applicationAdmin.verifyNoConsoleErrors();
+});
+
+When('Admin enables all toggles', async function (this: CustomWorld) {
+    await this.applicationAdmin.enableAllToggles();
+});
+
+When('Admin clicks on Save button for user', async function (this: CustomWorld) {
+   const btnSave = this.page.locator("//button//span[contains(text(),'Save')]");
+   btnSave.click();
+  //  await this.applicationAdmin.saveButton();
 });

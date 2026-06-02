@@ -1,4 +1,4 @@
-@technician
+
 Feature: Technician
 Technician page functionality work as per expectations
 
@@ -23,8 +23,6 @@ And user should view study table with columns:
       | Study Director|
       | Pathologist        |
       | Slides Mapped      |
- #     | #Organ             |
- #     | Analysis Completed |
       | Species            |
       | Status             |
 
@@ -39,7 +37,7 @@ And user navigates to any image repository
 And user view image list icon
 And user should view image repository path
 And user views images in list format
-And user view image repository table with columns:
+And user verify table with columns:
       | Name           |
       | Date Modified  |
       | Size           |
@@ -184,7 +182,7 @@ And user selects subject ids from picked elements
 And user click the filter
 Then user validates slides are displayed as per filter applied
 
-@editstudy
+@technician @editstudy
 Scenario: Verify edit option for Technician role from three dot menu
 Given user navigate to Technician dashboard
 And user navigate to Study section
@@ -198,22 +196,22 @@ Then user verify fields in edit study page:
       | Species |
       | Strain          |
 Then user should able to edit study details
-When Admin clicks on Save button
+When Admin clicks on Save & Exit button
 Then user should see success message of study updation
 
-@deletestudy
+@technician @deletestudy
 Scenario: Verify delete option for Technician role from three dot menu
-Given user navigate to Technician dashboard
+#Given user navigate to Technician dashboard
 And user navigate to Study section
 And user check status of study, if study is in Created status then only user can edit the study details
 Then user should click on delete option
 Then user should see confirmation popup with message "Delete Study"
 When user clicks on Delete button
-#Then user should see success message of study deletion
+Then user should see success message of study deletion
 
-@syncimages
+@technician @syncimages
 Scenario: Verify Sync Images option for Technician role from three dot menu
-Given user navigate to Technician dashboard
+#Given user navigate to Technician dashboard
 And user navigate to Study section
 And user check status of study, if study is in Created status then only user can edit the study details
 Then user should click on Sync Images option
@@ -221,12 +219,40 @@ Then user should see confirmation popup with message "Sync Images"
 #When user clicks on Sync button
 #Then user should see success message of image sync
 
-@analysis
-Scenario: Verify dashboard for Analysis section for Technician role
+ @autosync
+Scenario: Verify Auto Sync functionality for Technician role
+Given Application admin should be selected
+And Admin is on Field Configuration tab
+When Admin enables all toggles
 Given user navigate to Technician dashboard
+And user navigate to Study section
+And User clicks on "Create Study" button
+Given User selects a template "<Template_Name>" and upload a valid study data file "<Excel_File_Path>"
+When User enters study details
+And User clicks on "Next" button
+And User clicks on "Save & Finish" button
+Then user should see success message of study creation
+Then Status should be displayed as In Progress for the created study
+Examples:
+|Template_Name | Excel_File_Path  |
+| Organs  | 1AnimalID6organs_autosync.csv |
+
+@technician @analysisdashboard
+Scenario: Verify dashboard for Analysis section for Technician role
+#Given user navigate to Technician dashboard
 Given user navigate to Analysis dashboard
 Then User should view all the tabs in Analysis section:
       | QC Analysis |
       | Analysis |
 
-
+@technician @analysistab
+Scenario: Verify Analysis tab for Technician role
+#Given user navigate to Technician dashboard
+Given user navigate to Analysis dashboard
+And user click on Analysis tab
+And user verify table with columns:
+      | ID     |
+      | Algorithm |
+      | Analysed |
+      | Status|
+#And user click on dropdown of any analysis

@@ -60,7 +60,7 @@ Then('user views images in list format', async function () {
     await this.technicianPage.verifyListView();
 });
 
-Then('user view image repository table with columns:', async function (this: CustomWorld, dataTable) {
+Then('user verify table with columns:', async function (this: CustomWorld, dataTable) {
   const imag_cols = dataTable.raw().flat(); // ["Name", "Size","Date Modified"]
   for (const col of imag_cols) {
     await this.technicianPage.verifyImageTableColumn(col);
@@ -344,3 +344,22 @@ When('user clicks on Delete button', async function(this: CustomWorld){
      await this.technicianPage.verifyDelete();
 });
 
+When('user click on Analysis tab', async function(this: CustomWorld, ){
+     await this.technicianPage.clickTab('Analysis');
+});
+
+Then('user should see success message of study deletion', async function(this: CustomWorld){
+     await this.applicationAdmin.verifySuccessMessage(' Study Deleted Successfully ');
+});
+
+When('Admin clicks on Save & Exit button', async function(this: CustomWorld){
+     await this.technicianPage.saveAndExit();
+});
+
+Then('user should see success message of study creation', async function(this: CustomWorld){
+     await this.applicationAdmin.verifySuccessMessage(' Study created successfully ');
+});
+
+Then('Status should be displayed as In Progress for the created study', async function(this: CustomWorld){
+     await this.technicianPage.verifyStudyStatusDisplayed('In Progress','1AID7organs');
+});
