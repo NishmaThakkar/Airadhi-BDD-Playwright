@@ -17,4 +17,3 @@ Examples:
 |Template_Name | Excel_File_Path  |
 | 15Fields  | 1AnimalID9organs.csv |
 
-await page.getByRole('button', { name: 'Next' }).click();

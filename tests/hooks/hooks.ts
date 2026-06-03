@@ -84,11 +84,6 @@ BeforeStep(async function (this: CustomWorld) {
    });
 });
 
-  const page = await context.newPage();
-  this.page = page;
-  this.browser = browser;
-});
-
 After(async function (this: CustomWorld, scenario) {
 
   const status = scenario.result?.status;
